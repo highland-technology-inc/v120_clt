@@ -1,0 +1,241 @@
+.\" Process this file with
+.\" groff -man -Tascii v120.1
+.\"
+.TH V120 1 "APRIL 2013" "Highland Technology, Inc." "V120 API Reference"
+.SH NAME
+v120 \- miscellaneous utilities for the V120.
+.SH SYNOPSIS
+.B v120
+.RB [ -efFv ]
+[\fB-a \fIawidth\fR]
+[\fB-d \fIdwidth\fR]
+[\fB-m \fIcrate_no\fR]
+[\fB-s \fIspeed\fR]
+[\fB-S \fIslot0\fR]
+.IR "subcommand " [ args ]
+.P
+.BI "v120 flash-upgrade " upgrade_file
+.br
+.BI "v120 reset"
+.br
+.BI "v120 write " "address " [ value [ ... ]]
+.br
+.BI "v120 read " "address " [ count ]
+.br
+.BI "v120 sysreset"
+.br
+.BI "v120 loopback-upgrade " upgrade_file
+.br
+.BI "v120 requester [" bus ]
+.br
+.BI "v120 scan"
+.br
+.BI "v120 reinit"
+.P
+.BR "v120 report flash" | id | ident | power | uptime | status | pci | pcie
+.br
+.BI "v120 report monitor [" monitor ]
+.
+.SH DESCRIPTION
+v120 is a utility to access a V120 VME crate controller or a V124 VXI crate
+controler.
+.P
+.B v120 flash-upgrade
+upgrades a V120 with \fIupgrade_file\fR, which is a binary file provided
+by the vendor to upgrade the firmware.  It will usually have a name like
+22E120B_upgrade.bin.  DO NOT use an S-Record file (also provided by the
+vendor); these are used for flash upgrades via an ASCII protocol over
+TCP/IP.  After the subcommand has completed, you can verify the flash
+status by running \fBv120 report flash\fR.  You must run \fBv120 reset\fR
+for the new firmware to take effect.
+.P
+.B v120 reset
+reboots the V120 firmware. The \fB-m\fR option must be used, and it may
+not be set to \fBA\fR.
+.B WARNING:
+The V120 Linux driver does not yet support hot-plugging a V120.  You
+should reboot your computer before connecting again with the V120.
+.P
+.B v120 write
+writes sequential words to VME beginning at VME address \fIaddress\fR.
+If \fIvalue\fR is not provided on the command line, standard input will
+be parsed for values to write. If the \fB-e\fR option is used, additional
+VME status will print to standard error. If no options are used, the
+defaults will be \fB-a16 -dw -s1\fR.
+.P
+.B v120 read
+reads sequential words from VME beginning at VME address \fIaddress\fR.
+If \fIcount\fR is not provided, then only one word will be read.  The
+read values will be printed in "0x" hexadecimal format to the standard
+output, delimited by spaces.  If the \fB-e\fR option is used, additional
+VME status will print to standard error. If no options are used, the
+defaults will be \fB-a16 -dw -s1\fR.
+.P
+.B v120 sysreset
+asserts the SYSRESET signal from the V120.  The \fB-m\fR option must be
+used, and it may not be set to \fBA\fR.
+.P
+.B v120 loopback-upgrade
+upgrades a V120's "V129" FPGA image with \fIupgrade_file\fR. The \fB-m\fR
+option must be used, and it may not be set to \fBA\fR. This is
+used internally by the V120 developers.
+.P
+.B v120 requester
+sets or queries the V120 requester status.  \fIbus\fR is in range 0 to
+3.  If \fIbus\fR is unused, the command is a query, printing the info
+to the standard output.  If \fIbus\fR includes a \fB-f\fR option, FAIR is
+turned on for that bus. Otherwise FAIR is turned off.  Using the \fB-S\fR
+option will assert the system controller state, whether the command is
+a set or a query.  Currently the command works for only one \fIbus\fR
+at a time.
+.P
+.B v120 scan
+scans the entire A16 (and A24 too, if \fB-a24\fR is used) VME address
+space for the presence of VME cards. Expect the scan to take a couple
+minutes if \fB-a24\fR is used.
+.P
+.B v120 reinit
+is a work-around for hotplug problems.  If a V120 disconnects from the
+computer, either by \fBv120 reset\fR or by physically removing a cable,
+then the PCI config space will be lost.  This attempts to reconnect to
+the V120 (\fIafter\fR physical connection is reestablished!!!) by
+over-writing the PCI config space with saved values.
+.I Use this subcommand at your own risk!
+.P
+.B v120 report
+reports various information about the V120 status.  Sub-subcommands are
+.RS 4
+.B flash
+.RS 4
+Checksum the flash and print the contents of each valid image's header.
+Also print whether the current running image came from the upgrade
+portion of the flash or the fallback portion.
+.RE
+.BR ident | id
+.RS 4
+Report identifying information about a V120.
+.RE
+.B power
+.RS 4
+Show power supply status
+.RE
+.B uptime
+.RS 4
+Print number of seconds a crate has been in its current boot cycle.
+Note that this is not necessarily the number of seconds that a crate
+has been powered on.
+.RE
+.B status
+.RS 4
+Print information parsed mainly from a V120's STATUS register.
+.RE
+.B monitor
+.RS 4
+Get monitor info for one or all of the V120 monitors. \fImonitor\fR is
+in the range of 0 to 3.  If \fImonitor\fR is not used, then all four
+monitors will be used.
+.RE
+.BR pcie | pci
+.RS 4
+Dump the entire PCIe monitor block to standard output and reset it.  This
+is used internally by the V120 developers as a diagnostic tool.  If
+\fB-m\fR is used, it may not be set to \fBA\fR.
+.RE
+.RE
+.
+.SH OPTIONS
+\fB-m\fI crate\fR,
+\fB--crate_no\fR=\fIcrate\fR
+.RS 4
+Specify the crate number.  \fIcrate\fR is \fB0\fR to \fB15\fR, or \fBA\fR
+to perform the command on all crates.  If this option is not used, then
+the target will be the lowest-number connected crate.
+The \fBflash-upgrade\fR, \fBloopback-upgrade\fR, \fBreset\fR, and
+\fBsysreset\fR subcommands require the crate to be specified. They do not
+permit \fB-m A\fR. The \fBreport pci\fR subcommand also does not support
+\fB-m A\fR.
+.RE
+.P
+\fB-a\fI awidth\fR,
+\fB--awidth\fR=\fIawidth\fR
+.br
+\fB-d\fI dwidth\fR,
+\fB--dwidth\fR=\fIdwidth\fR
+.br
+\fB-s\fI speed\fR,
+\fB--speed\fR=\fIspeed\fR
+.RS 4
+For \fBv120 read\fR and \fBv120 write\fR, set the address modifier, data
+width, and speed of the VME transaction. \fIawidth\fR is one of
+.BR 16 ", " 24 ", or " 32 .
+\fIdwidth\fR is one of:
+.B b
+for 8 bits,
+.B w
+for 16 bits,
+.B l
+for 32 bits, and
+.B s
+for 32 bits split into two D16 transactions. \fIspeed\fR is \fB0\fR to
+\fB3\fR, with 0 being the slowest and 3 being the fastest.
+.P
+For \fBv120 scan\fR, if \fB-a24\fR is used, then the A24 address space
+will be scanned *in addition to* the A16 address space.  The other
+address modifiers, data width and speed options are ignored.
+.RE
+.P
+.BR -b ", " --binary
+.RS 4
+For \fBv120 read\fR and \fBv120 write\fR, if using standard in/out
+instead of command-line values, print or accept binary data instead of
+string expressions.
+.RE
+.P
+.BR -e ", " --vmeprint
+.RS 4
+For the \fBread\fR and \fBwrite\fR subcommands, print some debugging info
+about the VME transaction to standard error.
+.RE
+.P
+.BR -f ", " --fpga
+.RS 4
+For the \fBreset\fR subcommand, only reset the FPGA registers.
+.RE
+.P
+.BR -F ", " --fair
+.RS 4
+For the \fBrequester\fR subcommand, set bus to "fair".  The \fIbus\fR
+argument must be included.
+.RE
+.P
+\fB-S\fI slot0\fR,
+\fB--slot0\fR=\fIslot0\fR
+.RS 4
+For the \fBrequester\fR subcommand, assert whether the V120 is system
+controller or not.  If \fIslot0\fR is one of "1yYtT", the V120 is set
+as the system controller.  If \fIslot0\fR is on of "0nNfF", the V120 is
+no longer the system controller.  If the option is unused, then the
+system controller status will remain unchanged.  This option is
+independent of whether you use the \fBrequester\fR subcommand as a
+set or a query.
+.RE
+.P
+.BR -v ", " --verbose
+.RS 4
+Reserved, in case we wish to add a verbose-mode option.
+.RE
+.P
+.BR -V ", " --version
+.br
+.BR -? ", " --help
+.RS 4
+Show version/help
+.RE
+.SH BUGS
+As of 4/2013 the V120 is not hot-pluggable.
+.SH AUTHOR
+Paul Bailey <pbailey@highlandtechnology.com>
+.SH "SEE ALSO"
+.IR "V120 Technical Manual" ,
+.BR v120 (7)
+for info about C-language access to the V120.

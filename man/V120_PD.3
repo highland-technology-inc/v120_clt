@@ -1,0 +1,105 @@
+.TH "V120" "3" "July 2016" "Highland Technology, Inc." "V120 API Reference"
+.SH "NAME"
+\fBV120_PD\fR \- Data type for a V120 page descriptor
+.P
+.SH "SYNOPSIS"
+\fB#include <V120.h>
+.SH "DESCRIPTION"
+Many of the V120's library functions require type V120_PD.
+\fB<V120.h>\fR provides macros or enumerations for manipulating this
+type:
+.SS "Speed:"
+\fBV120_SMAX\fR      Maximum VME speed
+.br
+\fBV120_SFAST\fR     Fast VME speed
+.br
+\fBV120_SMED\fR      Medium VME speed
+.br
+\fBV120_SSLOW\fR     Slow VME speed
+.br
+.BI V120_SPEED( pd )
+Read the V120_S* value in \fIpd\fR
+.SS "Endianness:"
+\fBV120_EAUTO\fR     Automatic endianness
+.br
+\fBV120_EBYTE\fR     Byte endiannes
+.br
+\fBV120_ESHORT\fR    Short word endiannes
+.br
+\fBV120_ELONG\fR     Long word endianness
+.br
+.BI V120_ENDIAN( pd )
+Read the V120_E* value in \fIpd\fR.
+.SS "Address width/modifier:"
+\fBV120_A16\fR       A16 supervisory data access
+.br
+\fBV120_A24\fR       A24 supervisory data access
+.br
+\fBV120_A32\fR       A32 supervisory data access
+.br
+.BI V120_AWIDTH( pd )
+.RS 4
+Read the address modifier value in \fIpd\fR.  This will evaluate to
+one of the V120_A* macros above or it will evaluate to the result
+of a V120_MKAM() value.
+.RE
+.br
+.BI V120_MKAM( am )
+.RS 4
+Turn special address modifier \fIam\fR (0 to 63) into its V120_PD
+fields.  For example, to use A24 non-priviledged data access (am
+== 57), use V120_MKAM(57).
+.RE
+.SS "Write permission:"
+\fBV120_RW\fR        Read/write
+.br
+\fBV120_RO\fR        Read only
+.br
+.BI V120_PD_ISRW( pd )
+True if \fIpd\fR's write permission is set to V120_RW.
+.RE
+.SS "Data width:"
+\fBV120_D32\fR       32\-bit data width
+.br
+\fBV120_D16\fR       16\-bit data width
+.br
+.BI V120_DWIDTH( pd )
+Read the V120_D* value in \fIpd\fR
+.P
+.SH "EXAMPLE"
+When evaluating the data in a V120_PD type variable, keep in mind that
+most of these are not single-bit flags.
+.P
+\fIIncorrect\fR examples:
+.RS 4
+if (pd & V120_RO) ...
+.br
+if (pd & V12O_D32) ...
+.br
+if (pd & V120_A16) ...
+.br
+if (pd & special_address_modifier) ...
+.br
+if (pd & V120_SSLOW) ...
+.RE
+.P
+\fICorrect\fR examples:
+.RS 4
+if (!V120_PD_ISRW(pd)) ...
+.br
+if (V120_DWIDTH(pd) == V120_D32) ...
+.br
+if (V120_AWIDTH(pd) == V120_A16) ...
+.br
+if (V120_AWIDTH(pd) == V120_MKAM(special_address_modifier)) ...
+.br
+if (V120_SPEED(pd) == V120_SSLOW) ...
+.RE
+.IP "" 0
+.
+.SH "SEE ALSO"
+.BR v120 (7)
+.BR v120_allocate_vme (3)
+.BR v120_dma_xfr (3)
+.SH "AUTHOR"
+Paul Bailey

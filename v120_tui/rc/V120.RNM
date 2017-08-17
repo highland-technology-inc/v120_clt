@@ -1,0 +1,68 @@
+# V120 REGISTER NAMES LIST
+# August 27, 2013 PB
+
+W:4
+E:A
+A:16
+
+0 : MFR ID :U:4
+1 : MODTYPE     :U:4
+2 : MODREV      :U:4
+3 : SERIAL      :U:4
+4 : DASH        :U:4
+8 : ROM ID      :U:4
+9 : ROM REV     :U:4
+10: STAMP       :U:4
+16: STATUS      :U:4
+17: MCOUNT      :U:4
+18: UPTIME      :U:4
+19: ULED        :U:4
+20: DIPS        :U:4
+22: MACRO       :U:4
+23: MP 0        :U:4
+24: MP 1        :U:4
+25: MP 2        :U:4
+26: MP 3        :U:4
+32: VME ACC     :U:4
+33: VME WC      :U:4
+34: VME RC      :U:4
+35: UTILITY     :U:4
+36: REQUESTER   :U:4
+37: ARBSTATE    :U:4
+48: TESTMUX     :U:4
+49: CLOCK       :U:4
+50: VXI CLOCKS  :U:4
+51: VXI TRIGS   :U:4
+60: MAC LO      :U:4
+61: MAC HIGH    :U:4
+62: IP          :U:4
+65: SLOT        :U:4
+80: PDFLAGS     :U:4
+81: TEMPERATURE :U:4
+82: AIRFLOW     :U:4
+83: +5 VME      :U:4
+84: +12 VME     :U:4
+85: -12 VME     :U:4
+86: +24 VXI     :U:4
+87: -24 VXI     :U:4
+88: +3.3 VXI    :U:4
+89: -2 VXI      :U:4
+90: -5.2 VXI    :U:4
+91: +1.2 INTL   :U:4
+92: +2.5 INTL   :U:4
+93: +3.3 INTL   :U:4
+128: RAM 0      :U:4
+132: RAM 4      :U:4
+136: RAM 8      :U:4
+140: RAM 12     :U:4
+144: RAM 16     :U:4
+148: RAM 20     :U:4
+152: RAM 24     :U:4
+156: RAM 28     :U:4
+160: RAM 32     :U:4
+164: RAM 36     :U:4
+168: RAM 40     :U:4
+172: RAM 44     :U:4
+176: RAM 48     :U:4
+180: RAM 52     :U:4
+256: BUF 0      :U:4

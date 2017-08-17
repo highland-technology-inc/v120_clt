@@ -1,0 +1,161 @@
+.TH "V120" "3" "July 2016" "Highland Technology, Inc." "V120 API Reference"
+.SH "NAME"
+\fBv120_allocate_vme, v120_get_vme_region, v120_delete_vme_list, v120_allocate_vme\fR - Functions to access VME on V120
+.SH "SYNOPSIS"
+.nf
+.B #include <V120.h>
+
+.BI "VME_REGION *v120_add_vme_region(V120_HANDLE *" h ", VME_REGION *" data );
+.BI "VME_REGION *v120_get_vme_region(V120_HANDLE *" h ", const char *" name );
+.BI "void v120_delete_vme_list(V120_HANDLE *" h );
+.BI "int v120_allocate_vme(V120_HANDLE *" h ", unsigned int " start_page );
+.fi
+
+.SH "DESCRIPTION"
+.P
+\fIh\fR is a handle to a V120, returned from \fIv120_open()\fR or
+\fIv120_next()\fR.
+.
+.P
+\fIv120_add_vme_region()\fR
+.RS 4
+Add \fIdata\fR to a \fIVME_REGION\fR list maintained for \fIh\fR by the
+V120 software library.
+.P
+\fBWARNING!\fR The V120 library does not copy \fIdata\fR; it saves a
+pointer to \fIdata\fR instead. You must call \fIdelete_vme_list()\fR
+before destroying data. Keep this in mind, especially if \fIdata\fR is
+declared on the stack.
+.RE
+.
+.P
+\fIv120_get_vme_region()\fR
+.RS 4
+returns an added VME region whose \fItag\fR field matches \fIname\fR.
+.RE
+.
+.P
+\fIv120_allocate_vme()\fR
+.RS 4
+configures accesses for the entire VME crate.
+It will allocate the VME pages starting with \fIstart_page\fR and using
+as many pages as necessary, up to the last available page of 8191.
+.P
+Each item in \fIh\fR's \fIVME_REGION\fR list will be modified to set the
+\fIbase\fR, \fIstart_page\fR, and \fIend_page\fR fields.
+.RE
+.
+.P
+\fIv120_delete_vme_list()\fR
+.RS 4
+deletes \fIh\fR's entire \fIVME_REGION\fR list.  This function is implied
+with \fIv120_close()\fR.  This will not deallocate any data pointed to by
+the \fItag\fR or \fIudata\fR fields; if these have been dynamically
+allocated then they must be freed explicitly before the reference to them
+is lost.
+.
+.SS "VME_REGION"
+.P
+To access a single region of VME memory, \fIV120.h\fR defines a data
+structure with the following fields (not necessarily in this order):
+.P
+\fC
+.nf
+typedef struct VME_REGION {
+    void              *base;
+    unsigned int      start_page;
+    unsigned int      end_page;
+    uint64_t          vme_addr;
+    size_t            len;
+    V120_PD           config;
+    const char        *tag;
+    void              *udata;
+    /* additional private fields... */
+} VME_REGION;
+.fi
+\fR
+.P
+\fIbase\fR
+.RS 4
+Pointer to the base (lowest) address of the VME region.  This should be
+initialized to NULL by the user.  It will be set by
+\fIv120_allocate_vme()\fR.
+.RE
+.
+.P
+\fIstart_page\fR
+.RS 4
+Page descriptor index (0 to 8191) of the first page where this region
+occurs.  The region will be in all contiguous pages from \fIstart_page\fR
+to \fIend_page\fR.  This should be initialized to 0 by the user.  It will
+be set by \fIv120_allocate_vme()\fR.
+.RE
+.
+.P
+\fIend_page\fR
+.RS 4
+Page descriptor index (0 to 8181) of the last page where this region
+occurs.  The region will be in all contigous pages from \fIstart_page\fR
+to \fIend_page\fR. This should be initialized to 0 by the user.  It will
+be set by \fIv120_allocate_vme()\fR.
+.RE
+.
+.P
+\fIvme_addr\fR
+.RS 4
+VME base address set on the card.
+.RE
+.
+.P
+\fIlen\fR
+.RS 4
+Total size of the VME region, in bytes
+.RE
+.
+.P
+\fIconfig\fR
+.RS 4
+Page descriptor configuration flags.  See
+.BR V120_PD (3)
+for an explanation of these flags.
+.RE
+.
+.P
+\fItag\fR
+.RS 4
+Optional name or other identifying information.  This must be either a
+valid nul-char-terminated string or NULL.
+.RE
+.
+.P
+\fIudata\fR
+.RS 4
+Arbitrary user data to be attached to this card.  This may be set to any
+value; the V120 library does not use it.
+.RE
+.P
+Usually, a \fIVME_REGION\fR will correspond one-to-one with a single VME
+card, but some cards may require multiple regions, such as an A16
+configuration space and an A24 or A32 data space.
+.
+.SH "RETURN VALUE"
+.P
+\fIv120_add_vme_region()\fR returns a pointer to \fIdata\fR.
+.P
+\fIv120_get_vme_region()\fR returns a pointer to a \fIVME_REGION\fR,
+or NULL if no \fIVME_REGION\fR can be found in \fIh\fR's list whose
+\fItag\fR matches \fIname\fR.
+.P
+\fIv120_allocate_vme()\fR will return a positive number indicating the
+first unused VME page, zero indicating that all VME pages were used, or
+-1 indicating an error.  In the even of an error, errno will be set.
+.
+.SH "ERRORS"
+.SH "BUGS"
+.SH "EXAMPLE"
+.SH "SEE ALSO"
+.BR v120 (7)
+.BR v120_open (3)
+.BR V120_PD (3)
+.SH "AUTHOR"
+Paul Bailey

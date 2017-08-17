@@ -1,0 +1,56 @@
+.TH "V120" "3" "July 2016" "Highland Technology, Inc." "v120irqd API Reference"
+.NAME
+\fBv120irqd_status\fR - Query the V120 server status
+.SH "SYNOPSIS"
+.nf
+\fB#include <v120irqd.h>\fR
+.IB result " = v120irqd_status(int " socket ", struct v120irqd_serverstatus *" status );
+
+link with -lV120irqd
+.nf
+.SH "DESCRIPTION"
+.P
+\fIv120irqd_status()\fR queries the status of the IRQ daemon specifically
+serving \fIsocket\fR, and storing it in \fIstatus\fR.
+.P
+\fIstatus\fR is a pointer to a \fIstruct v120irqd_serverstatus\fR declared
+in \fI<v120irqd.h>\fR, containing the following fields
+.P
+.nf
+.RS 4
+pid_t pid;
+unsigned int crates;
+unsigned int clients;
+unsigned int irq_request;
+.RE
+.fi
+.P
+\fIpid\fR
+.RS 4
+process ID of the server
+.RE
+.P
+\fIcrates\fR
+.RS 4
+bitmask of available VME crates (0 to 15)
+.RE
+.P
+\fIclients\fR
+.RS 4
+Number of clients connected, including the one asking
+.RE
+.P
+\fIirq_requests\fR
+.RS 4
+Number of registerd IRQ descriptions
+.RE
+.SH "RETURN"
+Zero on success, or -errno on failure.
+.SH "AUTHORS"
+.P
+Rob Gaddi - libV120irqd and documentation
+.P
+Paul Bailey - man page transcript
+.SH "SEE ALSO"
+.BR v120irqd (7)
+.BR v120irqd (8)

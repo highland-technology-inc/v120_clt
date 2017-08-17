@@ -1,0 +1,93 @@
+.TH "V120" "8" "July 2016" "Highland Technology, Inc." "v120irqd API Reference"
+.SH "NAME"
+
+\fBv120irqd\fR - V120 interrupt dispatch daemon
+.SH "SYNOPSIS"
+
+.B v120irqd
+.RB [ -dfknV? "] [" --debug "] [" --fakeok "] [" --foreground ]
+.RB [ --novme "] [" --help "] [" --usage "] [" --version ]
+
+.SH "ARGUMENTS"
+.P
+\fB-d, --debug\fR
+.RS 4
+Debug mode: provide additional logging information.
+.RE
+.P
+\fB-f, --fakeok\fR
+.RS 4
+Allow clients to send fake interrupts
+.RE
+.P
+\fB-k, --foreground\fR
+.RS 4
+Run in foreground. Default is to fork to background.
+.RE
+.P
+\fB-n, --novme\fR
+.RS 4
+No VME interrupts. Implies --fakeok
+.RE
+.P
+\fB-?, --help\fR
+.RS 4
+Give this help list
+.RE
+.P
+\fB--usage\fR
+.RS 4
+Give a short usage message
+.RE
+.P
+\fB-V, --version\fR
+.RS 4
+Print program version
+.RE
+.
+.SH "SETUP"
+.P
+To use v120irqd(1), install it and make sure that it is executed as a
+part of the system startup process, which varies from system to system
+(init, systemd, upstart) and as a result the installer makes no attempt
+to handle this step. Additionally, v120irqd(1) makes extensive use of
+syslog functionality to provide diagnostic messages. These will go into
+/var/log/syslog by default; a sample rsyslogd file for diverting
+non-critical messages to /var/log/v120irqd.log is provided as well.
+.P
+\fC
+.nf
+# 30-v120irqd.conf
+#
+# This rsyslog filter file will redirect all v120irqd messages to
+# /var/log/v120irqd.log.  It will suppress any messages of severity
+# lower than ERROR from appearing in the main syslog.
+#
+# Copy this to /etc/rsyslog.d to use it.  It must have a lower start
+# number than the default rules, usually 50-default.conf.
+
+if $programname == "v120irqd" then {
+        action(type="omfile" File="/var/log/v120irqd.log")
+        if $syslogseverity > 3 then ~
+}
+.fi
+\fR
+.
+.SH "AUTHOR"
+Rob Gaddi - v120irqd and its documentation
+.P
+Paul Bailey - man page transcription
+.
+.SH "COPYRIGHT"
+Copyright Highland Technology, 2015. License 3-clause Modified BSD.
+.
+.SH "SEE ALSO"
+.
+.BR v120irqd (7),
+.BR v120 (7),
+.BR v120irqd_ack (3),
+.BR v120irqd_client (3),
+.BR v120irqd_getinterrupt (3),
+.BR v120irqd_release (3),
+.BR v120irqd_request (3),
+.BR v120irqd_status (3)

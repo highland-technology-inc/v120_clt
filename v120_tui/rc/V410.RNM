@@ -1,0 +1,84 @@
+# V410 REGISTER NAMES LIST
+
+# 7/10/2014, PB
+
+W:2     # Default reg size is 16 bits
+E:A     # Auto endianness
+A:16    # Default address space is A16
+
+0    :       VXI_MFR    :U:2
+1    :       VXI_TYPE   :U:2
+2    :       MOD_REV    :U:2
+3    :       SERIAL     :U:2
+4    :       ROM_ID     :U:2
+5    :       ROM_REV    :U:2
+6    :       MCOUNT     :U:2
+7    :       DASH       :U:2
+8    :       STATE      :U:2
+9    :       ULED       :U:2
+10   :       ERR        :U:2
+11   :       TEMP       :U:2
+12   :       CALID      :U:2
+13   :       YCAL       :U:2
+14   :       DCAL       :U:2
+15   :       BREL       :U:2
+16   :       CHREL      :U:2
+17   :       BMUX       :U:2
+18   :       BERN       :U:2
+19   :       PERR       :U:2
+24   :       MACRO      :U:2
+25   :       PARAM0     :U:2
+26   :       PARAM1     :U:2
+27   :       PARAM2     :U:2
+28   :       PARAM3     :U:2
+32   :       CC0        :U:2
+33   :       CC1        :U:2
+34   :       CC2        :U:2
+35   :       CC3        :U:2
+36   :       CC4        :U:2
+37   :       CC5        :U:2
+38   :       CC6        :U:2
+39   :       CC7        :U:2
+40   :       CC8        :U:2
+41   :       CC9        :U:2
+42   :       CC10       :U:2
+43   :       CC11       :U:2
+44   :       CC12       :U:2
+45   :       CC13       :U:2
+46   :       CC14       :U:2
+47   :       CC15       :U:2
+48   :       RD0        :U:2
+50   :       RD1        :U:2
+52   :       RD2        :U:2
+54   :       RD3        :U:2
+56   :       RD4        :U:2
+58   :       RD5        :U:2
+60   :       RD6        :U:2
+62   :       RD7        :U:2
+64   :       RD8        :U:2
+66   :       RD9        :U:2
+68   :       RD10       :U:2
+70   :       RD11       :U:2
+72   :       RD12       :U:2
+74   :       RD13       :U:2
+76   :       RD14       :U:2
+78   :       RD15       :U:2
+80   :       STATUS0    :U:2
+81   :       STATUS1    :U:2
+82   :       STATUS2    :U:2
+83   :       STATUS3    :U:2
+84   :       STATUS4    :U:2
+85   :       STATUS5    :U:2
+86   :       STATUS6    :U:2
+87   :       STATUS7    :U:2
+88   :       STATUS8    :U:2
+89   :       STATUS9    :U:2
+90   :       STATUS10   :U:2
+91   :       STATUS11   :U:2
+92   :       STATUS12   :U:2
+93   :       STATUS13   :U:2
+94   :       STATUS14   :U:2
+95   :       STATUS15   :U:2
+128  :       BUFFER0    :U:2
+255  :       BUFFER127  :U:2
+

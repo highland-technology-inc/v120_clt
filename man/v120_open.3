@@ -1,0 +1,126 @@
+.TH "V120" "3" "July 2016" "Highland Technology, Inc." "V120 API Reference"
+.SH "NAME"
+\fBv120_open, v120_close, v120_next, v120_crate\fR \- Functions to access a V120 crate
+.SH "SYNOPSIS"
+.nf
+
+\fB
+#include <V120.h>
+
+V120_HANDLE *v120_open(int unit_id);
+
+V120_HANDLE *v120_next(V120_HANDLE *h);
+int v120_crate(V120_HANDLE *h);
+
+int v120_close(V120_HANDLE *h);
+\fR
+.fi
+
+.SH "DESCRIPTION"
+.P
+These functions provide access control to V120 VME crate controllers that
+are connected to a PC via PCIe.
+.P
+A \fIV120_HANDLE\fR is a privately-defined struct that is used as a
+handle, needed for most functions in the V120.h library.
+.P
+\fIv120_open()\fR opens access to a V120 whose crate number is \fIunit_id\fR.
+.P
+\fIv120_close()\fR closes access to V120 whose handle is \fIh\fR.  Do not
+use \fIh\fR after a call to this function.
+.P
+\fIv120_next()\fR closes \fIh\fR and opens the V120 at the nearest higher
+crate number, if it is present. If \fIh\fR is NULL, then the V120 present
+with the lowest-number crate will be open.
+.P
+\fBWARNING:\fR Do not call \fIv120_next()\fR with a valid \fIh\fR until
+you are certain that no other thread is using it anymore.
+.P
+\fIv120_crate()\fR returns the crate number of an opened V120.  This is
+in case you open with \fIv120_next()\fR instead of \fIv120_open()\fR, and
+you still want to know which crate it is.
+
+.SH "RETURN VALUE"
+.P
+\fIv120_open()\fR and \fIv120_next()\fR will return a V120_HANDLE pointer.
+If the V120 at \fIunit_id\fR is not present then \fIv120_open()\fR will return
+NULL.  If there is no V120 present at a crate number higher than \fIh\fR\'s
+crate number, then \fIv120_next()\fR will return NULL.  Both functions will
+return NULL and set \fIerrno\fR if there was an error. \fIv120_crate()\fR
+will return a crate number.
+.P
+\fIv120_close()\fR will return 0 on success, or EOF if there is a failure.
+\fIerrno\fR will be set if there was an error.
+.SH "ERRORS"
+.SH "BUGS"
+.SH "EXAMPLE"
+.SS "v120_open, v120_close example"
+The following example will print the serial number of the v120 whose
+crate number is the command-line argument, or NP if not present
+.P
+\fC
+.nf
+#include <V120.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+
+int main(int argc, char **argv)
+{
+        int crate;
+        V120_HANDLE *v120;
+
+        if (argc != 2)
+                return EXIT_FAILURE;
+
+        crate = atoi(argv[1]);
+        if (crate < 0 || crate > 15)
+                return EXIT_FAILURE;
+
+        v120 = v120_open(crate);
+        if (!v120) {
+                if (errno)
+                        return EXIT_FAILURE;
+                printf("NP\\n");
+        } else {
+                V120_CONFIG *regs = v120_get_config(v120);
+                printf("%u\\n", (unsigned int)regs->serial);
+                v120_close(v120);
+        }
+        return EXIT_SUCCESS;
+}
+.fi
+\fR
+.SS "v120_next example"
+The following example will print the crate and serial numbers of every
+crate connected to the computer via PCIe.
+.P
+\fC
+.nf
+#include <V120.h>
+#include <stdio.h>
+
+int main(void)
+{
+        V120_HANDLE *v120;
+
+        /* Begin with the lowest available crate number */
+        v120 = NULL;
+        while ((v120 = v120_next(v120)) != NULL) {
+                V120_CONFIG *regs = v120_get_config(v120);
+                printf("crate: %d serial: %u\\n",
+                       v120_crate(v120), (unsigned int)regs->serial);
+        }
+        /*
+         * The last v120 was closed by last call to v120_next(),
+         * so no need to call v120_close() here.
+         */
+        return 0;
+}
+.fi
+\fR
+.SH "SEE ALSO"
+.BR v120 (7)
+.
+.SH "AUTHOR"
+Paul Bailey

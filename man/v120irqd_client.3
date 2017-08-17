@@ -1,0 +1,33 @@
+.TH "V120" "3" "July 2016" "Highland Technology, Inc." "v120irqd API Reference"
+.SH "NAME"
+\fBv120irqd_client\fR - Open a connection to the V120 IRQ daemon
+.SH "SYNOPSIS"
+.nf
+\fB#include <v120irqd.h>\fR
+.IB socketfd " = v120irqd_client(const char *" socketname );
+
+link with \fI-lV120irqd\fR
+.fi
+.
+.SH "DESCRIPTION"
+.P
+\fIv120irqd_client()\fR opens a socket to the server.
+.P
+\fIclientname\fR is the Name of the socket in the filesystem.  Begin it
+with an '@' to make it a hidden Linux socket (preferable because it
+cleans up after itself).  To use the compile-time default, use NULL; this
+should be the case anytime other than weird testing scenarios.
+.
+.SH "RETURN"
+A file descriptor for the socket is returned, or -1 if there was a failure.
+In case of a failure, \fIerrno\fR will be set.
+.
+.SH "AUTHOR"
+.P
+Rob Gaddi - libV120irqd and documentation
+.P
+Paul Bailey - man page transcription
+.
+.SH "SEE ALSO"
+.BR v120irqd (7)
+.BR v120irqd (8)

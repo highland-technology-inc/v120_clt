@@ -1,0 +1,516 @@
+# V545 REGISTER NAMES LIST
+# Feb 21, 2012   KV
+# Modified 8/2013 PB
+
+############## V120 parameters #################
+
+# These tell `v120_tui' how to configure a VME_REGION
+# with the V120. See man v120 (7).
+
+W:2     # Default reg size is 16 bits
+E:A     # Auto endianness
+A:16    # Default address space is A16
+
+#########################################################################
+#                        Register name list
+#########################################################################
+
+#                 Format
+# <reg_number>:<name>:<(un)signed>:<data_size>
+
+########### Overhead & Basic controls ###############
+
+0  :VXI MFR ID     :U:2            # HTI ID
+1  :VXI TYPE       :U:2            # MODEL
+3  :SERIAL         :U:2            # UNIT SERIAL NUMBER
+4  :ROM            :U:2            # FIRMWARE ID, 0X56D6, 22230
+5  :ROM REV        :U:2            # FIRMWARE REVISION, ASCII 'A'
+6  :MCOUNT         :U:2            # Micropocessor IRQ update
+7  :DASH           :U:2            # MODULE VERSION (DASH) NUMBER
+8  :RESETS         :U:2            # DDS reset/sychronize register
+9  :MODE           :U:2            # module operating mode
+10 :STATE          :U:2            # module state
+11 :ULED           :U:2            # user LED control
+12 :BISS           :U:2            # BIST status register
+13 :CALID          :U:2            # calibration table status
+14 :YCAL           :U:2            # calibration year
+16 :SWIN           :U:2            # D9 input switch state
+17 :SWOUT          :U:2            # D9 output switch control
+24 :MACRO          :U:2
+25 :PARAM 0        :U:2
+26 :PARAM 1        :U:2
+27 :PARAM 2        :U:2
+
+####### `Register File' ###############
+
+64 :R 0            :U:2
+72 :R 8            :U:2
+80 :R 16           :U:2
+88 :R 24           :U:2
+96 :R 32           :U:2
+104:R 40           :U:2
+112:R 48           :U:2
+120:R 56           :U:2
+
+########### DDS control blocks #############
+
+128:DFR 0          :U:2
+129:DPH 0          :U:2
+130:DAM 0          :U:2
+132:DFR 1          :U:2
+133:DPH 1          :U:2
+134:DAM 1          :U:2
+136:DFR 2          :U:2
+137:DPH 2          :U:2
+138:DAM 2          :U:2
+140:DFR 3          :U:2
+141:DPH 3          :U:2
+142:DAM 3          :U:2
+144:DFR 4          :U:2
+145:DPH 4          :U:2
+146:DAM 4          :U:2
+148:DFR 5          :U:2
+149:DPH 5          :U:2
+150:DAM 5          :U:2
+152:DFR 6          :U:2
+153:DPH 6          :U:2
+154:DAM 6          :U:2
+156:DFR 7          :U:2
+157:DPH 7          :U:2
+158:DAM 7          :U:2
+
+######## Channel Control Blocks #########
+
+256:CTL 0          :U:2            # Channel 0 control
+257:STS 0          :U:2            # Channel 0 status
+258:AMP 0          :S:2            # Channel 0 amplitude
+259:DLY 0          :U:2            # Channel 0 delay
+260:RMS 0          :U:2            # Channel 0 RMS voltage
+261:PSD 0          :S:2            # Channel 0 phase-sensitive detector
+262:FRQ 0          :U:2            # Channel 0 signal frequency
+
+264:CTL 1          :U:2            # Channel 1 control
+265:STS 1          :U:2            # Channel 1 status
+266:AMP 1          :S:2            # Channel 1 amplitude
+267:DLY 1          :U:2            # Channel 1 delay
+268:RMS 1          :U:2            # Channel 1 RMS voltage
+269:PSD 1          :S:2            # Channel 1 phase-sensitive detector
+270:FRQ 1          :U:2            # Channel 1 signal frequency
+
+272:CTL 2          :U:2            # Channel 2 control
+273:STS 2          :U:2            # Channel 2 status
+274:AMP 2          :S:2            # Channel 2 amplitude
+275:DLY 2          :U:2            # Channel 2 delay
+276:RMS 2          :U:2            # Channel 2 RMS voltage
+277:PSD 2          :S:2            # Channel 2 phase-sensitive detector
+278:FRQ 2          :U:2            # Channel 2 signal frequency
+
+280:CTL 3          :U:2            # Channel 3 control
+281:STS 3          :U:2            # Channel 3 status
+282:AMP 3          :S:2            # Channel 3 amplitude
+283:DLY 3          :U:2            # Channel 3 delay
+284:RMS 3          :U:2            # Channel 3 RMS voltage
+285:PSD 3          :S:2            # Channel 3 phase-sensitive detector
+286:FRQ 3          :U:2            # Channel 3 signal frequency
+
+288:CTL 4          :U:2            # Channel 4 control
+289:STS 4          :U:2            # Channel 4 status
+290:AMP 4          :S:2            # Channel 4 amplitude
+291:DLY 4          :U:2            # Channel 4 delay
+292:RMS 4          :U:2            # Channel 4 RMS voltage
+293:PSD 4          :S:2            # Channel 4 phase-sensitive detector
+294:FRQ 4          :U:2            # Channel 4 signal frequency
+
+296:CTL 5          :U:2            # Channel 5 control
+297:STS 5          :U:2            # Channel 5 status
+298:AMP 5          :S:2            # Channel 5 amplitude
+299:DLY 5          :U:2            # Channel 5 delay
+300:RMS 5          :U:2            # Channel 5 RMS voltage
+301:PSD 5          :S:2            # Channel 5 phase-sensitive detector
+302:FRQ 5          :U:2            # Channel 5 signal frequency
+
+304:CTL 6          :U:2            # Channel 6 control
+305:STS 6          :U:2            # Channel 6 status
+306:AMP 6          :S:2            # Channel 6 amplitude
+307:DLY 6          :U:2            # Channel 6 delay
+308:RMS 6          :U:2            # Channel 6 RMS voltage
+309:PSD 6          :S:2            # Channel 6 phase-sensitive detector
+310:FRQ 6          :U:2            # Channel 6 signal frequency
+
+312:CTL 7          :U:2            # Channel 7 control
+313:STS 7          :U:2            # Channel 7 status
+314:AMP 7          :S:2            # Channel 7 amplitude
+315:DLY 7          :U:2            # Channel 7 delay
+316:RMS 7          :U:2            # Channel 7 RMS voltage
+317:PSD 7          :S:2            # Channel 7 phase-sensitive detector
+318:FRQ 7          :U:2            # Channel 7 signal frequency
+
+320:CTL 8          :U:2            # Channel 8 control
+321:STS 8          :U:2            # Channel 8 status
+322:AMP 8          :S:2            # Channel 8 amplitude
+323:DLY 8          :U:2            # Channel 8 delay
+324:RMS 8          :U:2            # Channel 8 RMS voltage
+325:PSD 8          :S:2            # Channel 8 phase-sensitive detector
+326:FRQ 8          :U:2            # Channel 8 signal frequency
+
+328:CTL 9          :U:2            # Channel 9 control
+329:STS 9          :U:2            # Channel 9 status
+330:AMP 9          :S:2            # Channel 9 amplitude
+331:DLY 9          :U:2            # Channel 9 delay
+332:RMS 9          :U:2            # Channel 9 RMS voltage
+333:PSD 9          :S:2            # Channel 9 phase-sensitive detector
+334:FRQ 9          :U:2            # Channel 9 signal frequency
+
+336:CTL 10         :U:2            # Channel 10 control
+337:STS 10         :U:2            # Channel 10 status
+338:AMP 10         :S:2            # Channel 10 amplitude
+339:DLY 10         :U:2            # Channel 10 delay
+340:RMS 10         :U:2            # Channel 10 RMS voltage
+341:PSD 10         :S:2            # Channel 10 phase-sensitive detector
+342:FRQ 10         :U:2            # Channel 10 signal frequency
+
+344:CTL 11         :U:2            # Channel 11 control
+345:STS 11         :U:2            # Channel 11 status
+346:AMP 11         :S:2            # Channel 11 amplitude
+347:DLY 11         :U:2            # Channel 11 delay
+348:RMS 11         :U:2            # Channel 11 RMS voltage
+349:PSD 11         :S:2            # Channel 11 phase-sensitive detector
+350:FRQ 11         :U:2            # Channel 11 signal frequency
+
+352:CTL 12         :U:2            # Channel 12 control
+353:STS 12         :U:2            # Channel 12 status
+354:AMP 12         :S:2            # Channel 12 amplitude
+355:DLY 12         :U:2            # Channel 12 delay
+356:RMS 12         :U:2            # Channel 12 RMS voltage
+357:PSD 12         :S:2            # Channel 12 phase-sensitive detector
+358:FRQ 12         :U:2            # Channel 12 signal frequency
+
+360:CTL 13         :U:2            # Channel 13 control
+361:STS 13         :U:2            # Channel 13 status
+362:AMP 13         :S:2            # Channel 13 amplitude
+363:DLY 13         :U:2            # Channel 13 delay
+364:RMS 13         :U:2            # Channel 13 RMS voltage
+365:PSD 13         :S:2            # Channel 13 phase-sensitive detector
+366:FRQ 13         :U:2            # Channel 13 signal frequency
+
+368:CTL 14         :U:2            # Channel 14 control
+369:STS 14         :U:2            # Channel 14 status
+370:AMP 14         :S:2            # Channel 14 amplitude
+371:DLY 14         :U:2            # Channel 14 delay
+372:RMS 14         :U:2            # Channel 14 RMS voltage
+373:PSD 14         :S:2            # Channel 14 phase-sensitive detector
+374:FRQ 14         :U:2            # Channel 14 signal frequency
+
+376:CTL 15         :U:2            # Channel 15 control
+377:STS 15         :U:2            # Channel 15 status
+378:AMP 15         :S:2            # Channel 15 amplitude
+379:DLY 15         :U:2            # Channel 15 delay
+380:RMS 15         :U:2            # Channel 15 RMS voltage
+381:PSD 15         :S:2            # Channel 15 phase-sensitive detector
+382:FRQ 15         :U:2            # Channel 15 signal frequency
+
+384:CTL 16         :U:2            # Channel 16 control
+385:STS 16         :U:2            # Channel 16 status
+386:AMP 16         :S:2            # Channel 16 amplitude
+387:DLY 16         :U:2            # Channel 16 delay
+388:RMS 16         :U:2            # Channel 16 RMS voltage
+389:PSD 16         :S:2            # Channel 16 phase-sensitive detector
+390:FRQ 16         :U:2            # Channel 16 signal frequency
+
+392:CTL 17         :U:2            # Channel 17 control
+393:STS 17         :U:2            # Channel 17 status
+394:AMP 17         :S:2            # Channel 17 amplitude
+395:DLY 17         :U:2            # Channel 17 delay
+396:RMS 17         :U:2            # Channel 17 RMS voltage
+397:PSD 17         :S:2            # Channel 17 phase-sensitive detector
+398:FRQ 17         :U:2            # Channel 17 signal frequency
+
+400:CTL 18         :U:2            # Channel 18 control
+401:STS 18         :U:2            # Channel 18 status
+402:AMP 18         :S:2            # Channel 18 amplitude
+403:DLY 18         :U:2            # Channel 18 delay
+404:RMS 18         :U:2            # Channel 18 RMS voltage
+405:PSD 18         :S:2            # Channel 18 phase-sensitive detector
+406:FRQ 18         :U:2            # Channel 18 signal frequency
+
+408:CTL 19         :U:2            # Channel 19 control
+409:STS 19         :U:2            # Channel 19 status
+410:AMP 19         :S:2            # Channel 19 amplitude
+411:DLY 19         :U:2            # Channel 19 delay
+412:RMS 19         :U:2            # Channel 19 RMS voltage
+413:PSD 19         :S:2            # Channel 19 phase-sensitive detector
+414:FRQ 19         :U:2            # Channel 19 signal frequency
+
+416:CTL 20         :U:2            # Channel 20 control
+417:STS 20         :U:2            # Channel 20 status
+418:AMP 20         :S:2            # Channel 20 amplitude
+419:DLY 20         :U:2            # Channel 20 delay
+420:RMS 20         :U:2            # Channel 20 RMS voltage
+421:PSD 20         :S:2            # Channel 20 phase-sensitive detector
+422:FRQ 20         :U:2            # Channel 20 signal frequency
+
+424:CTL 21         :U:2            # Channel 21 control
+425:STS 21         :U:2            # Channel 21 status
+426:AMP 21         :S:2            # Channel 21 amplitude
+427:DLY 21         :U:2            # Channel 21 delay
+428:RMS 21         :U:2            # Channel 21 RMS voltage
+429:PSD 21         :S:2            # Channel 21 phase-sensitive detector
+430:FRQ 21         :U:2            # Channel 21 signal frequency
+
+432:CTL 22         :U:2            # Channel 22 control
+433:STS 22         :U:2            # Channel 22 status
+434:AMP 22         :S:2            # Channel 22 amplitude
+435:DLY 22         :U:2            # Channel 22 delay
+436:RMS 22         :U:2            # Channel 22 RMS voltage
+437:PSD 22         :S:2            # Channel 22 phase-sensitive detector
+438:FRQ 22         :U:2            # Channel 22 signal frequency
+
+440:CTL 23         :U:2            # Channel 23 control
+441:STS 23         :U:2            # Channel 23 status
+442:AMP 23         :S:2            # Channel 23 amplitude
+443:DLY 23         :U:2            # Channel 23 delay
+444:RMS 23         :U:2            # Channel 23 RMS voltage
+445:PSD 23         :S:2            # Channel 23 phase-sensitive detector
+446:FRQ 23         :U:2            # Channel 23 signal frequency
+
+############# Function Blocks ########################
+
+512:FB0 FUN        :U:2            # function block 0 control
+513:FB0 OPR        :U:2            # function block 0 parameter A
+514:FB0 FLG        :U:2            # function block 0 parameter B
+515:FB0 STS        :U:2            # function block 0 parameter C
+516:FB0 OVR        :U:2            # function block 0 parameter D
+517:FB0 STATE      :U:2            # function block 0 state register
+520:FB0 CP01       :U:2
+521:FB0 CP23       :U:2
+522:FB0 CP45       :U:2
+523:FB0 CP67       :U:2
+524:FB0 SRK        :U:2
+525:FB0 SRP        :U:2
+526:FB0 HS1        :U:2
+527:FB0 HS2        :U:2
+529:FB0 AP         :U:2
+531:FB0 FP         :U:2
+532:FB0 FV         :U:2
+536:FB0 MSV        :U:2
+
+544:FB1 FUN        :U:2            # function block 1 control
+545:FB1 OPR        :U:2            # function block 1 parameter A
+546:FB1 FLG        :U:2            # function block 1 parameter B
+547:FB1 STS        :U:2            # function block 1 parameter C
+548:FB1 OVR        :U:2            # function block 1 parameter D
+549:FB1 STATE      :U:2            # function block 1 state register
+552:FB1 CP01       :U:2
+553:FB1 CP23       :U:2
+554:FB1 CP45       :U:2
+555:FB1 CP67       :U:2
+557:FB1 SRP        :U:2
+558:FB1 HS1        :U:2
+559:FB1 HS2        :U:2
+561:FB1 AP         :U:2
+563:FB1 FP         :U:2
+564:FB1 FV         :U:2
+568:FB1 MSV        :U:2
+
+576:FB2 FUN        :U:2            # function block 2 control
+577:FB2 OPR        :U:2            # function block 2 parameter A
+578:FB2 FLG        :U:2            # function block 2 parameter B
+579:FB2 STS        :U:2            # function block 2 parameter C
+580:FB2 OVR        :U:2            # function block 2 parameter D
+581:FB2 STATE      :U:2            # function block 2 state register
+584:FB2 CP01       :U:2
+585:FB2 CP23       :U:2
+586:FB2 CP45       :U:2
+587:FB2 CP67       :U:2
+589:FB2 SRP        :U:2
+590:FB2 HS1        :U:2
+591:FB2 HS2        :U:2
+593:FB2 AP         :U:2
+595:FB2 FP         :U:2
+596:FB2 FV         :U:2
+600:FB2 MSV        :U:2
+
+608:FB3 FUN        :U:2            # function block 3 control
+609:FB3 OPR        :U:2            # function block 3 parameter A
+610:FB3 FLG        :U:2            # function block 3 parameter B
+611:FB3 STS        :U:2            # function block 3 parameter C
+612:FB3 OVR        :U:2            # function block 3 parameter D
+613:FB3 STATE      :U:2            # function block 3 state register
+616:FB3 CP01       :U:2
+617:FB3 CP23       :U:2
+618:FB3 CP45       :U:2
+619:FB3 CP67       :U:2
+621:FB3 SRP        :U:2
+622:FB3 HS1        :U:2
+623:FB3 HS2        :U:2
+625:FB3 AP         :U:2
+627:FB3 FP         :U:2
+628:FB3 FV         :U:2
+632:FB3 MSV        :U:2
+
+640:FB4 FUN        :U:2            # function block 4 control
+641:FB4 OPR        :U:2            # function block 4 parameter A
+642:FB4 FLG        :U:2            # function block 4 parameter B
+643:FB4 STS        :U:2            # function block 4 parameter C
+644:FB4 OVR        :U:2            # function block 4 parameter D
+645:FB4 STATE      :U:2            # function block 4 state register
+648:FB4 CP01       :U:2
+649:FB4 CP23       :U:2
+650:FB4 CP45       :U:2
+651:FB4 CP67       :U:2
+653:FB4 SRP        :U:2
+654:FB4 HS1        :U:2
+655:FB4 HS2        :U:2
+657:FB4 AP         :U:2
+659:FB4 FP         :U:2
+660:FB4 FV         :U:2
+664:FB4 MSV        :U:2
+
+672:FB5 FUN        :U:2            # function block 5 control
+673:FB5 OPR        :U:2            # function block 5 parameter A
+674:FB5 FLG        :U:2            # function block 5 parameter B
+675:FB5 STS        :U:2            # function block 5 parameter C
+676:FB5 OVR        :U:2            # function block 5 parameter D
+677:FB5 STATE      :U:2            # function block 5 state register
+680:FB5 CP01       :U:2
+681:FB5 CP23       :U:2
+682:FB5 CP45       :U:2
+683:FB5 CP67       :U:2
+685:FB5 SRP        :U:2
+686:FB5 HS1        :U:2
+687:FB5 HS2        :U:2
+689:FB5 AP         :U:2
+691:FB5 FP         :U:2
+692:FB5 FV         :U:2
+696:FB5 MSV        :U:2
+
+704:FB6 FUN        :U:2            # function block 6 control
+705:FB6 OPR        :U:2            # function block 6 parameter A
+706:FB6 FLG        :U:2            # function block 6 parameter B
+707:FB6 STS        :U:2            # function block 6 parameter C
+708:FB6 OVR        :U:2            # function block 6 parameter D
+709:FB6 STATE      :U:2            # function block 6 state register
+712:FB6 CP01       :U:2
+713:FB6 CP23       :U:2
+714:FB6 CP45       :U:2
+715:FB6 CP67       :U:2
+717:FB6 SRP        :U:2
+718:FB6 HS1        :U:2
+719:FB6 HS2        :U:2
+721:FB6 AP         :U:2
+723:FB6 FP         :U:2
+724:FB6 FV         :U:2
+728:FB6 MSV        :U:2
+
+736:FB7 FUN        :U:2            # function block 7 control
+737:FB7 OPR        :U:2            # function block 7 parameter A
+738:FB7 FLG        :U:2            # function block 7 parameter B
+739:FB7 STS        :U:2            # function block 7 parameter C
+740:FB7 OVR        :U:2            # function block 7 parameter D
+741:FB7 STATE      :U:2            # function block 7 state register
+744:FB7 CP01       :U:2
+745:FB7 CP23       :U:2
+746:FB7 CP45       :U:2
+747:FB7 CP67       :U:2
+749:FB7 SRP        :U:2
+750:FB7 HS1        :U:2
+751:FB7 HS2        :U:2
+753:FB7 AP         :U:2
+755:FB7 FP         :U:2
+756:FB7 FV         :U:2
+760:FB7 MSV        :U:2
+
+768:FB8 FUN        :U:2            # function block 8 control
+769:FB8 OPR        :U:2            # function block 8 parameter A
+770:FB8 FLG        :U:2            # function block 8 parameter B
+771:FB8 STS        :U:2            # function block 8 parameter C
+772:FB8 OVR        :U:2            # function block 8 parameter D
+773:FB8 STATE      :U:2            # function block 8 state register
+776:FB8 CP01       :U:2
+777:FB8 CP23       :U:2
+778:FB8 CP45       :U:2
+779:FB8 CP67       :U:2
+781:FB8 SRP        :U:2
+785:FB8 AP         :U:2
+787:FB8 FP         :U:2
+788:FB8 FV         :U:2
+792:FB8 MSV        :U:2
+
+800:FB9 FUN       :U:2            # function block 9 control
+801:FB9 OPR       :U:2            # function block 9 parameter A
+802:FB9 FLG       :U:2            # function block 9 parameter B
+803:FB9 STS       :U:2            # function block 9 parameter C
+804:FB9 OVR       :U:2            # function block 9 parameter D
+805:FB9 STATE     :U:2            # function block 9 state register
+808:FB9 CP01      :U:2
+809:FB9 CP23      :U:2
+810:FB9 CP45      :U:2
+811:FB9 CP67      :U:2
+813:FB9 SRP       :U:2
+817:FB9 AP        :U:2
+819:FB9 FP        :U:2
+820:FB9 FV        :U:2
+824:FB9 MSV       :U:2
+
+832:FB10 FUN        :U:2            # function block 10 control
+833:FB10 OPR        :U:2            # function block 10 parameter A
+834:FB10 FLG        :U:2            # function block 10 parameter B
+835:FB10 STS        :U:2            # function block 10 parameter C
+836:FB10 OVR        :U:2            # function block 10 parameter D
+837:FB10 STATE      :U:2            # function block 10 state register
+840:FB10 CP01       :U:2
+841:FB10 CP23       :U:2
+842:FB10 CP45       :U:2
+843:FB10 CP67       :U:2
+845:FB10 SRP        :U:2
+849:FB10 AP         :U:2
+851:FB10 FP         :U:2
+852:FB10 FV         :U:2
+856:FB10 MSV        :U:2
+
+864:FB11 FUN       :U:2            # function block 11 control
+865:FB11 OPR       :U:2            # function block 11 parameter A
+866:FB11 FLG       :U:2            # function block 11 parameter B
+867:FB11 STS       :U:2            # function block 11 parameter C
+868:FB11 OVR       :U:2            # function block 11 parameter D
+869:FB11 STATE     :U:2            # function block 11 state register
+872:FB11 CP01      :U:2
+873:FB11 CP23      :U:2
+874:FB11 CP45      :U:2
+875:FB11 CP67      :U:2
+877:FB11 SRP       :U:2
+881:FB11 AP        :U:2
+883:FB11 FP        :U:2
+884:FB11 FV        :U:2
+888:FB11 MSV       :U:2
+
+896:OB0 FUN        :U:2
+897:OB0 OPR        :U:2
+898:OB0 FLG        :U:2
+899:OB0 STS        :U:2
+902:OB0 DOG        :U:2
+912:OB0 OV0        :U:2
+
+928:OB1 FUN        :U:2
+929:OB1 OPR        :U:2
+930:OB1 FLG        :U:2
+931:OB1 STS        :U:2
+934:OB1 DOG        :U:2
+944:OB1 OV0        :U:2
+
+960:OB2 FUN        :U:2
+961:OB2 OPR        :U:2
+962:OB2 FLG        :U:2
+963:OB2 STS        :U:2
+966:OB2 DOG        :U:2
+976:OB2 OV0        :U:2
+
+992:OB3 FUN        :U:2
+993:OB3 OPR        :U:2
+994:OB3 FLG        :U:2
+995:OB3 STS        :U:2
+998:OB3 DOG        :U:2
+1008:OB3 OV0        :U:2
+1009:OB3 OV1        :U:2
+
+#

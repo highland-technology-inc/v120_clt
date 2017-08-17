@@ -1,0 +1,361 @@
+.TH V120 1 "JULY 2016" "Highland Technology, Inc." "V120 API Reference"
+.SH NAME
+.B v120_tui
+\- Simple terminal-based V120 VME browser
+.SH SYNOPSIS
+.BI "v120_tui [" options ]
+.P
+.B Important:
+To quit v120_tui, type ':q' and 'ENTER'.  If you remember nothing else,
+remember that.
+.B v120_tui
+.SH DESCRIPTION
+.P
+v120_tui is an ncurses-based, interactive VME browser using an interface
+with the V120 VME crate controller.
+.P
+It is \fINOT\fR:
+.RS 4
+\(bu a complete solution for VME register access
+.br
+\(bu a highly-maintained program, or even a program that is sure to be
+maintained at all in the future
+.br
+\(bu a permanent substitute for custom programs that you must write to modify
+VME registers on a regular basis
+.br
+\(bu highly customizable
+.br
+\(bu good at real-time response to VME cards
+.br
+\(bu good at displaying VME cards of mixed register data width.
+.br
+\(bu capable of displaying VME cards of mixed address modifiers, unless the
+different address spaces have their own unique RNM files (see RNM FILES
+below)
+.RE
+.P
+It \fIIS\fR:
+.RS 4
+\(bu a low-level captive interface
+.br
+\(bu a quick-and-easy way to access some registers for one occasion, rather
+than having to write an compile a special program
+.br
+\(bu something that has proved useful to its developer, and therefore provided
+here, just in case it's useful to you too
+.RE
+.P
+At load time, it configures 'buffers' (for lack of a better word, and
+borrowing from emacs terminology) for every V120 crates connected to the
+system via PCIe, and for any VME cards on those crates described by a
+configuration script.  There will be a main menu to navigate to the
+other buffers.
+.
+.SH OPTIONS
+Currently, v120_tui does not take any command line options
+.SH "KEY BINDINGS"
+.P
+First, to quit v120_tui, type ':q' and 'ENTER'. (Sound familiar?)
+.P
+For cursor motion, v120_tui has some VI-like key bindings for its main
+menu and its browser pages (arrow keys may also work depending on your
+terminal).
+.RS 4
+\f(CB
+.nf
+   j    |     up     |    J
+h     l | left right | H     L
+   k    |    down    |    K
+.fi
+\fR
+.RE
+.P
+Additional key bindings are:
+.RS 4
+.br
+.BR n ", " N
+.RS 4
+Switch browser
+.RE
+.br
+.BR 0 " (zero)"
+.RS 4
+go back to main menu
+.RE
+.br
+.BR : " (semicolon)"
+.RS 4
+verbose command.
+.RE
+.br
+.BR b ", " B
+.RS 4
+Go to previous buffer.  Current buffer will become the new "previous"
+buffer.
+.RE
+.br
+.BR Ctrl - B ", " PgUp
+.RS 4
+Scroll up one page.  PgUp works on most keyboards and terminals.
+.RE
+.br
+.BR Ctrl - F ", " PgDn
+.RS 4
+Scroll down one page.  PgDn works on most keyboards and terminals.
+.RE
+.br
+.BR Ctrl - H ", " Backspace
+.RS 4
+(Only while editing a line) Backwards delete.  If the \fIBACKSPACE\fR key
+does not work, try
+.IR Ctrl - H .
+.RE
+.BR Ctrl - C
+.RS 4
+Quit the program
+.RE
+.RE
+.p
+Verbose commands for the main menu are:
+.RS 4
+.B add-vme
+.RS 4
+Add a VME card. You will be prompted at the bottom of the screen for
+the following parameters: crate number, VME address, and (optionally) the
+RNM file associated with the card.  This is analogous to the "add-vme"
+command in the configuration script.
+.br
+If an RNM file's full path is not included, then it will your data
+directory, typically /usr[/local]/share/v120_tui will be searched. If
+the RNM is not present, then the data width and address modifier will
+be assumed; the address space and buffer will be loaded without any
+register names or info.
+.RE
+.br
+.B add-dummy
+.RS 4
+Add a dummy VME card.  You don't need it.  It's handy for debugging
+this program when no V120 or driver is available.  See prompt for
+parameters.
+.RE
+.br
+.B kill
+.RS 4
+Kill the current buffer page.  Note that if this is a VME block, only
+the page and its associated metadata will be killed.  The VME regions
+will not be unmapped until it is time to kill the entire VME crate.
+.RE
+.br
+.B load-file
+.RS 4
+Load a script.  See SCRIPTS below.
+.RE
+.RE
+.P
+When in a browser window, the keybindings are:
+.RS 4
+.B c, C
+.RS 4
+Toggle the default register data width between two bytes and four bytes.
+.RE
+.br
+.B w, W
+.RS 4
+Write a value to the selected register. The bottom right hand of the
+screen will indicated number base with \fBH\fR for hexadecimal (default)
+or \fBT\fR for decimal.  When editing a number, 'T' or 'H' will toggle
+this number base.  The number will not be interpreted and written until
+you press ENTER.
+.RE
+.br
+.B z, Z
+.RS 4
+Write zero to the selected register.
+.RE
+.br
+.B /, g
+.RS 4
+Move the cursor to a register at a specified byte offset
+.RE
+.br
+.B G
+.RS 4
+Move the cursor to the first register with a given name.  The name must
+match a name in the RNM file associated with this card.  If there is no
+match, or if the card does not have an RNM file associated with it, there
+will be no change.
+.RE
+.br
+.B d, D
+.RS 4
+(as in "ditto") repeat last execution of the 'w' key but for the
+currently selected register.
+.RE
+.RE
+.P
+In the browser window, the verbose commands are:
+.RS 4
+.B add-rnm
+.RS 4
+Add an RNM file's metadata for this card.  If an RNM file is already
+attached to this card, that link will be overwritten.  The old RNM will
+remain in cache in case it is used again.  \fBWARNING:\fR Trying to load
+an updated version of an already cached RNM (ie one with the same path)
+will result in the old cache being used, and the new file will not get
+loaded.
+.RE
+.br
+.B refresh-off
+.RS 4
+Turn off refresh.  We understand.  The constant blinking on the screen
+can cause headaches.  Turn it back on on :refresh-on.
+.RE
+.br
+.B refresh-on
+.RS 4
+Change the screen refresh rate.  Parameter is in milliseconds, or a
+negative number to turn refresh off.
+.RE
+.br
+.B write-reg
+.RS 4
+Write to a register whose name matches the argument, or at the offset
+provided if the name argumetn is a number.
+.RE
+.RE
+.
+.SH SCRIPTS
+.P
+Verbose commands can be put into a script and then loaded with the
+command ":load-file".  It may contain any of the main menu's verbose
+commands in it (except don't use "load-file" itself).  You can load this
+in order to add all the VME cards at once.
+.P
+At startup, v120_tui looks for such a script in your $HOME directory
+called \fI.v120_tui\fR, so you don't have to call the "load-file"
+command every time you open it.
+.P
+The load file is parsed by line, with each line having the form
+.RS 4
+command arg0 arg1 ...argn
+.RE
+.br
+in which whitespace delimits the commands and arguments.  If an argument
+is in hexadecimal it must be written with "0x".  All of a line following
+a '#' character is ignored and can be used for comments.  Blank lines and
+leading whitespace is okey.
+.SH "RNM FILES"
+An RNM file describes the register names of a VME card.  It is parsed
+according to line.  Each line is delimited by semicolons.  Whitespace
+is okay, so long as the register name does not have whitespace inside
+it.
+.P
+An RNM file must have the following lines:
+.RS 4
+\(bu A line that is either "W:2" or "W:4" to indicate the card's default
+register size as either 16 bits ("2") or 32 bits ("4")
+A line of the form \fBW:\fIARG\fR to indicate the card's default register
+width in bytes, where \fIARG\fR is either
+\fB2\fR (two bytes, or 16 bits) or \fB4\fR (four bytes, or 32 bits).
+.br
+\(bu A line of the form \fBA:\fIARG\fR to indicate the card's address space,
+where \fIARG\fR is
+.BR 16 ", " 24 ", or " 32 .
+If a card has multiple address space (which is common enough), it's best
+to use two RNM files, eg "V208_16.RNM" and "V208_32.RNM".
+.br
+\(bu A line of the form \fBE:\fIARG\fR to indicate endiannes, where \fIARG\fR
+is one of
+\fBA\fR  for "auto",
+\fBL\fR  for "long",
+\fBB\fR  for "byte", or
+\fBS\fR  for "short"
+.br
+\(bu A line for each register of the form
+.RS 4
+.IR index : name : signed : datawidth .
+.RE
+\fIindex\fR is the register array index. For example, if the default data
+width of the registers are 16 bits, then a register at address offset 0x2
+will have an index of \fB1\fR.
+\fIname\fR is a brief name of the register.  It may have whitespace (but
+why?...)
+\fIsigned\fR is either \fBU\fR for unsigned or \fBS\fR for signed.
+\fIdatawidth\fR is the width of the specific register.  This is currently
+unused, but it must be present on the line.
+.RE
+.SH EXAMPLES
+.P
+A typical \fI.v120_tui\fR script might look like
+.P
+.RS 4
+\fC
+.nf
+#        crate #  vme adr  rnm
+#        -------  -------  ---
+add-vme  0        0x0000   V470.RNM # will search $prefix/share/v120_tui
+add-vme  0        0xC000   V545.RNM
+add-vme  1        0xC000   /some/direct/path/V208.RNM
+.fi
+\fR
+.RE
+.P
+The following is an example RNM file, up to its first registers
+.P
+.RS 4
+\fC
+.nf
+# V545 REGISTER NAMES LIST
+
+############## V120 parameters #################
+
+# These tell `v120_tui' how to configure a VME_REGION
+# with the V120 (See V120.h)
+
+W:2     # Default reg size is 16 bits
+E:A     # Auto endianness
+A:16    # Default address space is A16
+
+#########################################################################
+#                        Register name list
+#########################################################################
+
+#                 Format
+# <reg_number>:<name>:<(un)signed>:<data_size>
+
+0  :VXI MFR ID     :U:2            # HTI ID
+1  :VXI TYPE       :U:2            # MODEL
+3  :SERIAL         :U:2            # UNIT SERIAL NUMBER
+4  :ROM            :U:2            # FIRMWARE ID, 0X56D6, 22230
+5  :ROM REV        :U:2            # FIRMWARE REVISION, ASCII 'A'
+6  :MCOUNT         :U:2            # Micropocessor IRQ update
+7  :DASH           :U:2            # MODULE VERSION (DASH) NUMBER
+8  :RESETS         :U:2            # DDS reset/sychronize register
+9  :MODE           :U:2            # module operating mode
+10 :STATE          :U:2            # module state
+11 :ULED           :U:2            # user LED control
+12 :BISS           :U:2            # BIST status register
+13 :CALID          :U:2            # calibration table status
+14 :YCAL           :U:2            # calibration year
+16 :SWIN           :U:2            # D9 input switch state
+17 :SWOUT          :U:2            # D9 output switch control
+# and the rest...
+.fi
+\fR
+.RE
+.
+.SH BUGS
+Did we mention this is not a robustly maintained program?
+.br
+RNM limitations should be rethought, esp. wrt whitespace.
+.SH AUTHOR
+Paul Bailey <pbailey@highlandtechnology.com> v120_tui
+.SH "SEE ALSO"
+.BR v120 (1)
+-- a non-captive command line tool
+.br
+.BR v120 (7)
+and
+.BR v120 (4)
+-- libraries, driver, et al., used by this program

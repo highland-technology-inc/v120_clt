@@ -1,0 +1,54 @@
+# Debian v120(1) completion for Debian bash   -*- shell-script -*-
+_v120()
+{
+    local cur prev
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    case ${prev} in
+        flash-upgrade|loopback-upgrade)
+            _filedir
+            return 0
+            ;;
+        report)
+            COMPREPLY=( $( compgen -W "flash id power uptime status pci" \
+                                   -- "$cur" ) )
+            return 0
+            ;;
+        -a|--awidth)
+            COMPREPLY=( $( compgen -W "16 24 32" -- "$cur" ) )
+            return 0
+            ;;
+        -d|--dwidth)
+            COMPREPLY=( $( compgen -W "b w l s" -- "$cur" ) )
+            return 0;
+            ;;
+        -s|--speed)
+            local speeds=$( seq 0 3 )
+            COMPREPLY=( $( compgen -W "${speeds}" -- "$cur" ) )
+            return 0;
+            ;;
+        -m|--crate_no)
+            local crates=$( seq 0 15 )
+            COMPREPLY=( $( compgen -W "${crates}" -- "$cur" ) )
+            return 0;
+            ;;
+        *)
+            ;;
+    esac
+
+    if [[ "$cur" == -* ]]; then
+        COMPREPLY=( $( compgen -W '-m -a -d -s -b -e -f -F -S -v -V -?
+            --crate_no --awidth --dwidth --speed --binary --vmeprint
+            --fpga --fair --slot0 --verbose --version --help' \
+            -- "$cur" ) )
+    else
+        COMPREPLY=( $( compgen -W 'flash-upgrade reset write read
+            sysreset loopback-upgrade requester scan reinit report' \
+            -- "$cur" ) )
+    fi
+
+    return 0
+} &&
+complete -F _v120 v120

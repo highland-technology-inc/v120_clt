@@ -1,0 +1,137 @@
+:leveloffset: 1
+:author:	Rob Gaddi
+:email:		<rgaddi@highlandtechnology.com>
+
+Interrupts
+==========
+
+VME Interrupts
+--------------
+
+VME modules can request interrupts by asserting (low) the open-drain IRQ
+lines (7 downto 1).  When a module asserts an interrupt, the interrupt
+responder module must perform an *IACK* _Interrupt Acknowledge_ cycle to
+fetch the interrupt vector from the module; this is a (generally
+user-programmed) value that identifies the interrupting card, since multiple
+VME modules can interrupt on the same interrupt line.
+
+From here, VME modules can be divided into two types.  A *ROAK* module will
+_Release on AcKnowledge_, and thus let go of the IRQ line.  A *RORA* module
+will _Release on Register Access_, meaning that a further action must be
+taken by the VME master to complete the interrupt cycle.
+
+The V120 acts as both a bus master and an interrupt responder. However,
+since decisions about priority and how to handle RORA modules are policy
+questions that on a module by module and system by system basis, the
+generation of IACK cycles and any RORA completions are left to the userspace
+program.
+
+As will be discussed further, the user has the option to either poll on the
+interrupt status or to configure individual IRQ lines to generate true PCIe
+MSI interrupts.
+
+[id="polling"]
+IRQ Polling
+-----------
+
+An application can periodically check the IRQSTATUS register, which provides
+the current status of the IRQ lines.  This is less efficient than using true
+interrupts, but easier and places fewer rules on how interrupts must be
+handled.
+
+Having used v120_open or v120_next to get a handle to a given V120,
+v120_get_irq returns a V120_IRQ for that V120.  At that point, processing
+interrupts is as simple as checking periodically to see which interrupt
+requests are active, pulling the IACK vectors, and serving them appropriately.
+
+.Processing all interrupts in priority order
+[source,C]
+----
+void process_interrupts(V120_IRQ *pIrq)
+{
+    int irq;
+    do {
+        uint32_t status = pIrq->irqstatus;
+        for (int irq=7; irq>0; irq--) {
+            if (status & (1 << irq)) {
+                uint32_t vector = pIrq->iack_vector[irq];
+                take_some_action(irq, vector);
+                break;
+            }
+        }
+    } while (irq>0);
+}
+----
+
+Driver Interrupts
+-----------------
+
+More complicated but faster than polling is to use true interrupts. By
+setting bits 7-1 in the IRQEN register (available from the V120_IRQ*) IRQ7-1
+respectively will generate real interrupts.  These interrupts will made
+available on a file handle, which can be retrieved by calling v120_irq_open
+on the V120_HANDLE, which opens the appropriate +/dev/v120\_q__N__+ device. This
+handle must be opened for exclusive read access; only one process is allowed
+to hold the interrupt device at a time.
+
+Upon receipt of a PCIe interrupt (an interrupt selected in IRQEN has
+asserted), the  device acknowledges the V120 hardware and sets an interrupt
+pending flag. When the flag is clear, a call will block until the flag is
+set. When this flag is set, a read(2) call against the device will
+immediately return EOF and clear the flag.
+
+This allows a user application to use a blocking read(2) call to receive
+interrupts when they happen, likely from a background thread. Alternatively,
+the application can use select(2), poll(2), or epoll_wait(2) to query this
+flag asynchronously, but must still use the read(2) call to clear it.  The
+flag will never clear itself; if poll(2) says that read(2) won’t block then
+read(2) won’t block.
+
+The data from the read(2) should be ignored, but this is the indication that
+there are now interrupts to process, as per the +process_interrupts+ example
+in <<"polling">>.
+
+WARNING: Whereas the polling system was insensitive to which interrupts
+were processed, when using true interrupts it is essential that the
+interrupts be iterated until all IRQ lines set in IRQEN are simultaneously
+clear, otherwise future interrupt notifications will not happen.  This is a
+mechanism to prevent errant VME modules from overwhelming the kernel, but
+can easily cause a userspace program to lock up.
+
+v120irqd Interrupt Daemon
+-------------------------
+
+To allow multiple processes access to true interrupts, an interrupt
+dispatching mechanism is required.  Highland has provided v120irqd, which is
+a fairly simple daemon which takes ownership of all +/dev/v120\_q__N__+
+devices and acts as a server on a Unix socket. Client applications can
+connect to this socket and request interrupts based on combinations of crate
+ID, IRQ number, and IACK vector, using functions defined in +v120irqd.h+ and
+provided in _libV120irqd_.
+
+This greatly simplifies writing interrupt-driven applications, as the daemon
+takes over management of the IRQEN register on all crates.  Having
+initialized the interrupt requests using v120irqd_client to connect to the
+server and v120irqd_request to define the requested interrupt, the and
+v120irqd_ack to acknowledge receipt and application can use the blocking
+call v120irqd_getinterrupt to wait on an interrupt notification from the
+server, allow the daemon to go on processing other interrupts.
+
+As v120irqd_getinterrupt is a blocking call, the application will probably
+want to run it in a background thread.  To avoid blocking on
+v120irqd_getinterrupt, either select(2), poll(2), epoll_wait(2) or _SIGIO_
+based asynchronous IO can be used, since the socket handle to the daemon
+behaves like any other socket.
+
+See +examples/v120irqd+ for client examples.
+
+.V680 Example
+[example]
+[source,C]
+----
+include::../examples/v680test.c[tabsize=4]
+----
+
+:leveloffset: 2
+include::v120irqd_application.txt[]
+:leveloffset: 1

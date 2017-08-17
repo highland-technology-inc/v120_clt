@@ -1,0 +1,11 @@
+Paul Bailey <pbailey@highlandtechnology.com>
+  V120 utility programs in src/
+  V120 linux driver
+  libV120 implementation
+  source tree owner && cleanup of people's source contributions
+
+Rob Gaddi <rgaddi@highlandtechnology.com>
+  v120irqd
+  libV120irqd interface
+  libV120* interface viz. headers in include/
+  v120irqd examples and test programs in examples/ and test/

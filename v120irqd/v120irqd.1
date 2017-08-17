@@ -1,0 +1,45 @@
+.TH v120irqd 1 "July 2015" "Highland Technology, Inc." "v120irqd User Manual"
+.SH NAME
+v120irqd \- V120 interrupt dispatch daemon
+.SH SYNOPSIS
+.SY v120irqd
+.OP "-dfknV?"
+.OP --debug
+.OP --fakeok
+.OP --foreground
+.OP --novme
+.OP --help
+.OP --usage
+.OP --version
+.YS
+.SH ARGUMENTS
+.IP "-d, --debug"
+Debug mode: provide additional logging information.
+.IP "-f, --fakeok"
+Allow clients to send fake interrupts
+.IP "-k, --foreground"
+Run in foreground.  Default is to fork to background.
+.IP "-n, --novme"
+No VME interrupts.  Implies --fakeok
+.IP "-?, --help"
+Give this help list
+.IP "--usage"
+Give a short usage message
+.IP "-V, --version"
+Print program version
+
+.SH COPYRIGHT
+Copyright Highland Technology, 2015.  License 3\-clause Modified BSD.
+
+.SH AUTHOR
+Rob Gaddi, Highland Technology
+23\-Jun\-2015
+
+.SH "SEE ALSO"
+.BR v120irqd_ack (3)
+.BR v120irqd_client (3)
+.BR v120irqd_getinterrupt (3)
+.BR v120irqd_release (3)
+.BR v120irqd_request (3)
+.BR v120irqd_status (3)
+.BR v120irqd (7)

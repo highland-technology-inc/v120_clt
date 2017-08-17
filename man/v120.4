@@ -1,0 +1,215 @@
+.TH "V120" "4" "July 2016" "Highland Technology, Inc." "V120 API Reference"
+.
+.SH "NAME"
+v120_q, v120_v, v120_c - V120 device files
+.
+.SH "SYNOPSIS"
+.nf
+.B "#include <V120.h>"
+
+/* For "/dev/v120_q[0-15]" files: */
+.IB result " = read(int " fd ", void *" buf ", size_t " count );
+.IB result " = poll(struct pollfd *" fds ", nfds_t " ndfs ", int " timeout );
+/* ... (and the other poll-like functions) */
+
+/* For "/dev/v120_v[0-15]" files: */
+.IB result " = ioctl(int " fd ", V120_IOC_DMA_XFR, (struct v120_dma_desc_t *)" desc );
+.IB result " = ioctl(int " fd ", V120_IOC_DMA_STATUS, (struct v120_dma_status_t *)" status );
+.IB vme_ptr " = mmap(void *" addr ", V120_PAGE_SIZE * " npages ", int " prot ,
+.BI "               int " flags ", int " fd ", V120_PAGE_SIZE * " vme_start_page );
+
+/* For "/dev/v120_c[0-15]" files: */
+.IB result " = ioctl(int " fd ", V120_IOC_PERSIST, NULL);"
+.IB ptr " = mmap(void *" addr ", 0x15000, int " prot ", int " flags ", int " fd ", 0);"
+.BI "V120_CONFIG   *" config_regs "  = (void *)" ptr " + 0x10000;"
+.BI "V120_PD       *" pd_regs "      = (void *)" ptr " + 0;"
+.BI "V120_IRQ      *" irq_regs "     = (void *)" ptr " + 0x14400;"
+.BI "V120_MONITOR  *" mon_regs "     = (void *)" ptr " + 0x14000;"
+.BI "V120_PCIE_RECORDS *" rec_regs " = (void *)" ptr " + 0x14800;"
+
+.IR /dev/v120_c [ 0 - 15 ]
+.IR /dev/v120_v [ 0 - 15 ]
+.IR /dev/v120_q [ 0 - 15 ]
+.RI $your_rules_directory /10-v120.rules
+.fi
+.
+.SH "DESCRIPTION"
+.P
+For a given crate N that is connected to the computer, the \fBV120\fR
+driver will create the following three files:
+.IR /dev/v120_c N,
+.IR /dev/v120_q "N, and"
+.IR /dev/v120_v N.
+For example, if a V120 is connected at crate four, the files will be
+.IR /dev/v120_c4 ,
+.IR /dev/v120_q4 ,
+and
+.IR /dev/v120_v4 .
+.P
+Users need not directly access these files.  \fIlibV120\fR and
+\fIlibV120irqd\fR were provided to manage that.  See \fBv120\fR (7) and
+\fBv120irqd\fR (7). Do not access the V120's \fI/dev\fR files
+directly if you are using these libraries.
+.P
+.IR /dev/v120_c [ 0 - 15 ]
+.RS 4
+Access to memory-mapped control registers on the V120 (not VME).  This is
+the BAR0 PCI region for the V120. By mmap()ing at address zero for
+a size of 0x15000 (see above synopsis), you can access all of the
+V120's registers in BAR 0.  See the V120 Technical reference manual and
+.BR v120 (7)
+for a description of these register blocks, whose members are given C
+definitions in \fI<V120.h>\fR.
+.P
+\fIread\fR() and \fIwrite\fR() calls to this device file are deprecated.
+.RE
+.P
+.IR /dev/v120_q [ 0 - 15 ]
+.RS 4
+Access to IRQ blocking on the V120 (read-only).  This does not map any
+V120 registers.  A \fIread\fR() call to this device will block until the
+V120 sends an interrupt.  The return value will be zero.  The interrupt
+number can be read from the \fIirq_regs\fR->\fIirqen\fR register mmap()ed
+from the v120_c* device (see
+.BR v120 (7)).
+.P
+libV120irqd was provided to preclude the need for this low level of IRQ
+handling.  See
+.BR v120irqd (7).
+.RE
+.P
+.IR /dev/v120_v [ 0 - 15 ]
+.RS 4
+Access to VME space via the V120, whether by memory-mapping or DMA ioctls.
+See discussion in the subsection below.
+.P
+\fIread\fR() and \fIwrite\fR() calls to this device file are deprecated.
+.RE
+.P
+.I 10-v120.rules
+.RS 4
+This file comes with the driver source.  It typically goes in
+\fI/etc/udev/rules.d\fR. It sets the permissions on the above files.
+If you do not have this file, you can create it with the lines:
+.P
+KERNEL=="v120_c*", MODE="0666"
+.br
+KERNEL=="v120_v*", MODE="0666"
+.br
+KERNEL=="v120_q*", MODE="0444"
+.
+.SS "Accessing VME with mmap"
+.P
+The entire BAR 1 address space of the V120 is VME, mapped through the
+V120.  See the V120 Technical Manual for a discussion of setting up
+the page descriptors (also see
+.BR V120_PD (3))
+to "map" VME addresses onto the V120's BAR 1 address space.
+.P
+When a BAR 1 page has been mapped to a VME address by setting its
+corresponding page descriptor (\fIpd_regs\fR[page_number] in the
+/dev/v120_c* part of the synopsis above), accesses to addresses in that
+page will be to VME.  The offset from the base of BAR 1 to a page number
+is \fBV120_PAGE_SIZE\fR times the page number.  \fBV120_PAGE_SIZE\fR is
+declared as a macro in \fB<V120.h>\fR.
+.P
+\fBWARNING:\fR Do not manipulate page descriptors if you are also using
+libV120 on the same V120.
+.
+.SS "Accessing VME with DMA"
+.P
+The V120's BAR2 region contains the V120's DMA controller.  Only access
+this using ioctls to the /dev/v120_v* device file.  Ioctls are:
+.P
+.B V120_IOC_DMA_XFR
+.RS 4
+Transfer data to/from DMA whose DMA descriptor chain is pointed at by
+the ioctl argument (\fIstruct v120_dma_desc_t\fR, documented in
+.BR v120_dma_xfr (3)).
+.RE
+.B V120_IOC_DMA_STATUS
+.RS 4
+Fill the \fIstruct v120_dma_status_t\fR argument (documented in
+.BR v120_dma_status (3))
+with information about the most current DMA status.
+.P
+The driver will double-buffer this transfer, on the assumption that
+a large local-memory-to-local-memory copy will be fast enough compared to
+the time that the process has spent asleep during the DMA transfer.
+.P
+DMA transfers will be split into smaller chains if the chain is too
+long or the cumlative number of bytes to copy is too long.
+.RE
+.
+.SS "Hotplugging"
+.P
+The driver provides no robust way of dealing with hot-plugging a
+V120.  If a V120 is rebooted or unplugged and re-plugged into the
+computer, then config space is lost.
+.P
+The
+.B V120_IOC_PERSIST
+ioctl, when called on
+.IR /dev/v120_c n
+is a hack that writes a saved copy of the config-space registers
+back into the V120's PCIe config space.  This may not work on every
+system, and the old config space may not be accurate if the V120's
+reboot was due to a firmware upgrade.  Rebooting the computer after a
+firmware upgrade is preferred over using
+.BR V120_IOC_PERSIST .
+.\" TODO: Write the following sections
+.\" .SS "sysfs files"
+.\" .
+.\" .SH "DRIVER"
+.\" .
+.SH "RESTRICTIONS"
+.P
+The /dev/v120_q* device files were not designed to be accessed by
+multiple processes.  If more than one process read()s the same
+/dev/v120_q* device, the ensuing interrupt will only wake up one
+process properly.  The others will either return an error or not
+wake up until the next interrupt later.
+.BR v120irqd (8)
+was designed to reduce this problem by providing a single process
+node for the /dev/v120_q* device.
+.P
+Multiple crates connected to the same computer must have different
+crate numbers (the number visible in the V120's seven-segment display),
+or one or more crates will be entirely ignored by the driver.
+.P
+Check your computer's restrictions on the amount of BAR memory that can
+be IO-mapped.  If connecting multiple crates to the same computer is
+necessary, you may need to kluge the "vmalloc" boot parameter.
+.
+.SH "RETURN VALUE"
+See
+.BR read (2),
+.BR ioctl (2),
+.BR mmap (2),
+and
+.BR poll (2)
+for return values.
+.P
+A successful \fBread\fR() call to a \fI/dev/v120_q\fR* file will
+always return zero, and transfer zero bytes.
+.
+.\" TODO: userland errors returned from the modules methods.
+.\" .SH "ERRORS"
+.
+.SH "SEE ALSO"
+.BR v120 (7),
+.I V120 Technical Manual
+.P
+\fIstruct v120_dma_status_t\fR is documented in
+.BR v120_dma_status (3).
+.P
+\fIstruct v120_dma_desc_t\fR is documented in
+.BR v120_dma_xfr (3).
+.P
+.IR V120_CONFIG ", " V120_IRQ ", " V120_MONITOR ", " V120_PD ", and " V120_PCIE_RECORDS
+are documented in
+.BR v120 (7),
+along with an overview of \fIlibV120\fR and \fIlibV120irqd\fR.
+.
+.SH "AUTHORS"
+Paul Bailey <pbailey@highlandtechnology.com> - V120 Linux Driver

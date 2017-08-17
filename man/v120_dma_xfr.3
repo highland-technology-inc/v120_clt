@@ -1,0 +1,129 @@
+.TH "V120" "3" "July 2016" "Highlandtechnolgy, Inc." "V120 API Reference"
+.SH "NAME"
+\fBv120_dma_xfr\fR \- Function to perform a DMA transfer
+
+.SH "SYNOPSIS"
+.nf
+\fB
+#include <V120.h>
+int v120_dma_xfr(V120_HANDLE *v120, struct v120_dma_desc_t *desc);
+\fR
+.fi
+
+.SH "DESCRIPTION"
+.P
+\fIv120_dma_xfr\fR transfers a DMA chain described by \fIhdr\fR.
+.P
+\fIv120\fR is a pointer to a V120 handle returned from either
+\fIv120_open\fR or \fIv120_next\fR.
+.P
+\fIdesc\fR points to the first element of a linked list of \fIstruct
+v120_dma_desc_t\fR defined in \fIV120.h\fR
+as
+.P
+\fC
+.nf
+struct v120_dma_desc_t {
+        /* private fields */
+        \...
+        uint32_t flags;
+        uintptr_t ptr;
+        uint32_t size;
+        uintptr_t next;
+        uint64_t vme_address;
+};
+.fi
+\fR
+.P
+\fIflags\fR
+.RS 4
+Control flags for the entire transaction chain (see below).
+.RE
+.P
+\fIptr\fR
+.RS 4
+Pointer to the memory on the computer that will receive data from VME
+(if performing reads) or that contains data to send to VME (if performing
+writes).
+.RE
+.P
+\fIsize\fR
+.RS 4
+Size of data or buffer at \fIptr\fR.
+.RE
+.P
+\fInext\fR
+.RS 4
+Pointer to the next \fIstruct v120_dma_desc_t\fR on this chain, or
+(uintptr_t)0 if this is the last member.
+.RE
+.P
+\fIvme_address\fR
+.RS 4
+VME address to write to/read from.
+.RE
+.P
+.SS "flags"
+.P
+\fBV120_DMA_CTL_HOLD\fR
+.RS 4
+Prevent increasing the address on the VME bus (useful for FIFO accesses).
+.RE
+.P
+\fBV120_DMA_CTL_WRITE\fR
+.RS 4
+If this flag is used, the transaction is from the computer to the VME
+card.  If it is clear, the transaction is from the VME card to the
+computer.
+.RE
+.P
+Additionally, the \fIflags\fR field must specify address width,
+data-width, and endianness, using the macros below (described in greater
+detail in
+.BR V120_PD (3)).
+.P
+Speed:
+.RS 4
+\fBV120_SMAX\fR,
+\fBV120_SFAST\fR,
+\fBV120_SMED\fR,
+\fBV120_SSLOW\fR
+.RE
+.P
+Endianness:
+.RS 4
+\fBV120_EAUTO\fR,
+\fBV120_EBYTE\fR,
+\fBV120_ESHORT\fR,
+\fBV120_ELONG\fR
+.RE
+.P
+Data width:
+.RS 4
+\fBV120_D32\fR,
+\fBV120_D16\fR
+.RE
+.P
+Address modifier:
+.RS 4
+\fBV120_A16\fR,
+\fBV120_A24\fR,
+\fBV120_A32\fR
+.RE
+
+
+.SH "RETURN VALUE"
+.P
+Zero is returned upon success, -1 on failure.  If there was a failure,
+then errno will be set.
+.SH "ERRORS"
+.SH "BUGS"
+.SH "EXAMPLE"
+.SH "SEE ALSO"
+.BR v120 (7)
+.BR V120_PD (3)
+.BR v120_open (3)
+.BR v120_dma_status (3)
+.
+.SH "AUTHOR"
+Paul Bailey

@@ -1,0 +1,60 @@
+# V420 REGISTER NAMES LIST
+# WRIT 4/7/2014 BY PB
+
+W:2
+E:A
+A:16
+
+0       :       VXI_MFR
+1       :       VXI_TYPE
+3       :       SERIAL
+4       :       ROM_ID
+5       :       ROM_REV
+6       :       MCOUNT
+8       :       CFLAGS
+10      :       SYSFLAGS
+11      :       RELAYS
+12      :       ULED
+13      :       MODE
+14      :       CALID
+15      :       BISS
+16      :       MACRO
+17      :       PARAM0
+18      :       PARAM1
+19      :       PARAM2
+20      :       YCAL
+21      :       DCAL
+32      :       CTL0
+33      :       RTD0
+36      :       CTL1
+37      :       RTD1
+40      :       CTL2
+41      :       RTD2
+44      :       CTL3
+45      :       RTD3
+48      :       CTL4
+49      :       RTD4
+52      :       CTL5
+53      :       RTD5
+56      :       CTL6
+57      :       RTD6
+60      :       CTL7
+61      :       RTD7
+64      :       RH0
+65      :       RL0
+66      :       RH1
+67      :       RL1
+68      :       RH2
+69      :       RL2
+70      :       RH3
+71      :       RL3
+72      :       RH4
+73      :       RL4
+74      :       RH5
+75      :       RL5
+76      :       RH6
+77      :       RL6
+78      :       RH7
+79      :       RL7
+80      :       LBHI
+81      :       LBLO

@@ -1,0 +1,38 @@
+This file contains the overview of changes made to driver and user tools.
+See ChangeLog for the more detailed changes made in version control since
+the last release.
+
+V120-1.0: HTI SVN commit 5877
+  This is the first ``official'' released version.
+  Changes from v120-0.6:
+  Userspace:
+  - Added EXPORT_SYMBOl()s to v120 handles so additional kernel driver
+    can use ours.
+  - Added the "scan" subcommand to v120 program.
+  - Added "v120_tui", a terminal-based register browser.
+  Driver:
+  - Added DMA support for those V120s and V124s that use it.  See man
+    v120 (4) after installing, or "man ./man/v120.4" if not installing.
+  - Deprecated the read() and write() calls to v120_v* and v120_c* device
+    files.
+  - Fixed bug in dkms.conf that prevented driver from getting
+    automatically rebuilt and reinstalled upon kernel updates.
+  Etc:
+  - Added man pages for libraries, tools, functions, etc.
+  - Lots of source tree cleanup and reorganization.
+
+V120-0.6: HTI SVN commit 5372, 03-May-2016
+  Changes from v120-0.5:
+  - Added v120irqd, a daemon program to handle IRQs from V120.
+    Documentation is in v120-0.6 source tree, beginning at
+    doc/builddoc/html/index.html
+  - Moved driver source into application source tree.  During current
+    development, the application and driver are too coupled to each other
+    to try to keep track of which goes with which unless they are in the
+    same source tree.
+      The same driver is still distributed by itself as well, for
+    customers who do not wish to use the application.
+  - Cleaned up dead code in the driver w/r/t DMA that was never
+    implemented.
+      Also modified some of the driver's data structures.  This should
+    have no impact on the API with userspace.

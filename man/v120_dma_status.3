@@ -1,0 +1,178 @@
+.TH "V120" "3" "July 2016" "Highland Technology, Inc." "V120 API Reference"
+.SH "NAME"
+\fBv120_dma_status\fR \- Get some DMA diagnostic info from previous DMA transfer
+
+.SH "SYNOPSIS"
+.nf
+\fB
+#include <V120.h>
+
+int v120_dma_status(V120_HANDLE *v120, struct v120_dma_status_t *status);
+\fR
+.fi
+
+.SH "DESCRIPTION"
+.P
+\fIv120_dma_status\fR is the C equivalent to reading the V120's sysfs
+\fIdma\fR file.  It returns low-level debug info with respect to the most
+recent DMA transaction. It was intended for use by the V120 developers.
+.P
+\fIv120\fR is a V120 handle returned from either \fIv120_open()\fR or
+\fIv120_next\fR.
+.P
+\fIstatus\fR is a pointer to a \fIstruct v120_dma_status_t\fR defined
+in \fIV120.h\fR as
+.P
+\fC
+.nf
+struct v120_dma_status_t {
+        uint32_t status;
+        uint32_t vme_acc;
+        uint64_t erraddr;
+        uint64_t lastvme;
+        /* ... et al. fields reserved for expansion */
+};
+.fi
+\fR
+.P
+\fIstatus\fR
+.RS 4
+Contents of tha DMA block's STATUS register
+.RE
+.P
+\fIvme_acc\fR
+.RS 4
+Status of the last VME access attempted.  This is fast moving status
+information while the DMA transfer is occuring, but will be the
+information on the VME failure if \fIV120_DMA_STATUS_VMEERR\fR is set in
+\fIstatus\fR.
+.RE
+.P
+\fIerraddr\fR
+.RS 4
+Address of the DMA descriptor in which an error, indicated by one of the
+error bits in \fIstatus\fR
+.RE
+.P
+\fIlastvme\fR
+.RS 4
+Address of the last VME access attempted.  This is fast moving status
+information while the DMA transfer is occuring, but will be the address
+of the VME failure if \fIV120_DMA_STATUS_VMEERR\fR is set in \fIstatus\fR.
+.RE
+.SS "status"
+.P
+The \fIstatus\fR field uses the following flags:
+.P
+\fBV120_DMA_STATUS_IFLAG\fR
+.RS 4
+The state of the DMA controller interrupt flag.
+.RE
+.P
+\fBV120_DMA_STATUS_VAERR\fR
+.RS 4
+The DMA chain terminated because the \fBVME\fR address was not divisible
+by the VME transfer size. \fIerraddr\fR will contain the address of the
+failed descriptor.
+.RE
+.P
+\fBV120_DMA_STATUS_BAERR\fR
+.RS 4
+The DMA chain terminated because the \fBbus\fR address was not divisible
+by the VME transfer size. \fIerraddr\fR will contain the address of the
+failed descriptor.
+.RE
+.P
+\fBV120_DMA_STATUS_LENERR\fR
+.RS 4
+The DMA chain terminated because the DMA descriptor had a zero length, or
+a length not divisible by the VME transfer size. \fIerraddr\fR will
+contain the address of the failed descriptor.
+.RE
+.P
+\fBV120_DMA_STATUS_CHKERR\fR
+.RS 4
+The DMA chain terminated because the DMA descriptor had a bad checksum.
+\fIerraddr\fR will contain the address of the failed descriptor.
+.RE
+.P
+\fBV120_DMA_STATUS_VMEERR\fR \fI*\fR
+.RS 4
+The DMA chain terminated due to a VME error.  \fIerraddr\fR will contain
+the address of the descriptor that failed. \fIlastvme\fR will contain the
+VME address that failed.  \fIvme_acc\fR will have more information about
+the transfer.
+.P
+\fI*\fR Note that any error except for VME_STATUS_VMEERR suggests
+a bug in either the V120 or V120 driver.
+.RE
+.P
+\fBV120_DMA_STATUS_OK\fR
+.RS 4
+The DMA chain completed successfully.
+.RE
+.P
+In addition to the above flags, the \fIstatus\fR field uses the following
+operators:
+.P
+\fBV120_DMA_STATUS_DCOMP\fR(\fIstatus\fR)
+.RS 4
+will return the number of descriptors that have been completed.
+.RE
+.P
+\fBV120_DMA_STATUS_DFETCH\fR(\fIstatus\fR)
+.RS 4
+will return the number of descriptors that have been fetched.
+.RE
+.SS "vme_acc"
+.P
+The \fIvme_acc\fR field uses the following flags:
+.P
+\fBV120_DMA_VMEACC_AF\fR
+.RS 4
+A transaction cannot complete due to a failure to win arbitration on the
+VME bus.
+.RE
+.P
+\fBV120_DMA_VMEACC_BTO\fR
+.RS 4
+A transaction cannot complete before the bus timer expires
+.RE
+.P
+\fBV120_DMA_VMEACC_RETRY\fR
+.RS 4
+A transaction completed with a RETRY response
+.RE
+.P
+\fBV120_DMA_VMEACC_BERR\fR
+.RS 4
+A transaction completted with a BERR response
+.RE
+.P
+\fBV120_DMA_VMEACC_DTACK\fR
+.RS 4
+A transaction completed with a DTACK response
+.RE
+.P
+In addition to the above flags, the \fIvme_acc\fR field uses the
+following operator:
+.P
+\fBV120_DMA_VMEACC_TIMER\fR(\fIvme_acc\fR)
+.RS 4
+will return the number of 8-ns clock ticks that the transaction took to
+complete.
+
+.SH "RETURN VALUE"
+\fIv120_dma_status()\fR will return zero if \fIstatus\fR is filled in,
+or -1 if there was an error.  If the return value is -1, \fIerrno\fR will
+be set.
+.P
+.SH "ERRORS"
+.SH "BUGS"
+.SH "EXAMPLE"
+.SH "SEE ALSO"
+.BR v120 (7)
+.BR v120_open (3)
+.
+.SH "AUTHOR"
+Paul Bailey - libV120 and documentation

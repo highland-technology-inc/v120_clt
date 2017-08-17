@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<book	xmlns="http://docbook.org/ns/docbook"
+		xmlns:xi="http://www.w3.org/2001/XInclude"
+		version="5.0" xml:id="V120">
+  <info>
+	<title>V120 Linux Programmer's Manual</title>
+	<authorgroup>
+		<author>
+			<personname><firstname>Rob</firstname><surname>Gaddi</surname></personname>
+			<affiliation>
+				<orgname>Highland Technology, Inc.</orgname>
+				<address><email>rgaddi@highlandtechnology.com</email></address>
+			</affiliation>
+			<contrib>Author of v120irqd</contrib>
+		</author>
+	</authorgroup>
+
+	<copyright>
+		<year>2015</year>
+		<holder>Highland Technology, Inc.</holder>
+	</copyright>
+
+	<legalnotice>
+		<para>All rights reserved.</para>
+
+		<para>Redistribution and use in source and binary forms, with or without
+		modification, are permitted provided that the following conditions are
+		met:</para>
+
+			<orderedlist inheritnum="ignore" continuation="restarts">
+				<listitem><para>
+	Redistributions of source code must retain the above copyright notice, this
+	list of conditions and the following disclaimer.
+				</para></listitem><listitem><para>
+	Redistributions in binary form must reproduce the above copyright notice,
+	this list of conditions and the following disclaimer in the documentation
+	and/or other materials provided with the distribution.
+				</para></listitem><listitem><para>
+	Neither the name of the copyright holder nor the names of its contributors
+	may be used to endorse or promote products derived from this software
+	without specific prior written permission.
+				</para></listitem>
+			</orderedlist>
+
+	<para>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+	CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING,
+	BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+	FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+	COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+	INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+	NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+	USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+	ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+	THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</para>
+		</legalnotice>
+	</info>
+	<toc/>
+
+	<chapter xml:id="intro"><info><title>Introduction</title></info>
+
+		<para>
+	The Linux interfaces to the V120 allow both the V120 itself and VME modules
+	controlled by it to be accessed by userspace code, with no need to write
+	kernel drivers other than the one provided for the V120.
+		</para>
+	</chapter>
+
+	<xi:include href="v120_irq/v120irqd.xml" xpointer="_interrupts" />
+	<xi:include href="v120_irq/v120irqd-api.xml" />
+</book>

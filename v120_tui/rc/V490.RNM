@@ -1,0 +1,201 @@
+#     V490 REGISTER NAMES LIST
+#     AUG 12, 2010   KV
+#     Modified for v120_tui, Aug 29, 2013 PB
+W:2
+E:A
+A:16
+0  :MFR ID         :U:2
+1  :MOD TYPE       :U:2
+3  :SERIAL         :U:2
+4  :ROM ID         :U:2
+5  :ROM REV        :U:2
+6  :MCOUNT         :U:2
+7  :DASH           :U:2
+8  :FPGA ID        :U:2
+9  :FPGA RV        :U:2
+11 :RELAYS         :U:2
+12 :ULED           :U:2
+13 :MODE           :U:2
+14 :CALID          :U:2
+15 :CHERR          :U:2
+16 :MACRO          :U:2
+17 :PARAM0         :U:2
+18 :PARAM1         :U:2
+19 :PARAM2         :U:2
+20 :YCAL           :U:2
+21 :DCAL           :U:2
+22 :BERN           :U:2
+23 :BMUX           :U:2
+24 :FZAP           :U:2
+25 :VMETRIG        :U:2
+26 :TRIGGER        :U:2
+27 :BOUNCE         :U:2
+28 :M              :U:2
+32 :CTL  0         :U:2
+33 :FILT 0         :U:2
+34 :FIFO 0         :U:2
+35 :FDIV 0         :U:2
+36 :RDAT 0         :S:2
+38 :FDAT 0A        :S:2
+39 :FDAT 0B        :S:2
+40 :CTL  1         :U:2
+41 :FILT 1         :U:2
+42 :FIFO 1         :U:2
+43 :FDIV 1         :U:2
+44 :RDAT 1         :S:2
+46 :FDAT 1A        :S:2
+47 :FDAT 1B        :S:2
+48 :CTL  2         :U:2
+49 :FILT 2         :U:2
+50 :FIFO 2         :U:2
+51 :FDIV 2         :U:2
+52 :RDAT 2         :S:2
+54 :FDAT 2A        :S:2
+55 :FDAT 2B        :S:2
+56 :CTL  3         :U:2
+57 :FILT 3         :U:2
+58 :FIFO 3         :U:2
+59 :FDIV 3         :U:2
+60 :RDAT 3         :S:2
+62 :FDAT 3A        :S:2
+63 :FDAT 3B        :S:2
+64 :CTL  4         :U:2
+65 :FILT 4         :U:2
+66 :FIFO 4         :U:2
+67 :FDIV 4         :U:2
+68 :RDAT 4         :S:2
+70 :FDAT 4A        :S:2
+71 :FDAT 4B        :S:2
+72 :CTL  5         :U:2
+73 :FILT 5         :U:2
+74 :FIFO 5         :U:2
+75 :FDIV 5         :U:2
+76 :RDAT 5         :S:2
+78 :FDAT 5A        :S:2
+79 :FDAT 5B        :S:2
+80 :CTL  6         :U:2
+81 :FILT 6         :U:2
+82 :FIFO 6         :U:2
+83 :FDIV 6         :U:2
+84 :RDAT 6         :S:2
+86 :FDAT 6A        :S:2
+87 :FDAT 6B        :S:2
+88 :CTL  7         :U:2
+89 :FILT 7         :U:2
+90 :FIFO 7         :U:2
+91 :FDIV 7         :U:2
+92 :RDAT 7         :S:2
+94 :FDAT 7A        :S:2
+95 :FDAT 7B        :S:2
+96 :CTL  8         :U:2
+97 :FILT 8         :U:2
+98 :FIFO 8         :U:2
+99 :FDIV 8         :U:2
+100:RDAT 8         :S:2
+102:FDAT 8A        :S:2
+103:FDAT 8B        :S:2
+104:CTL  9         :U:2
+105:FILT 9         :U:2
+106:FIFO 9         :U:2
+107:FDIV 9         :U:2
+108:RDAT 9         :S:2
+110:FDAT 9A        :S:2
+111:FDAT 9B        :S:2
+112:CTL  10        :U:2
+113:FILT 10        :U:2
+114:FIFO 10        :U:2
+115:FDIV 10        :U:2
+116:RDAT 10        :S:2
+118:FDAT 10A       :S:2
+119:FDAT 10B       :S:2
+120:CTL  11        :U:2
+121:FILT 11        :U:2
+122:FIFO 11        :U:2
+123:FDIV 11        :U:2
+124:RDAT 11        :S:2
+126:FDAT 11A       :S:2
+127:FDAT 11B       :S:2
+128:CTL  12        :U:2
+129:FILT 12        :U:2
+130:FIFO 12        :U:2
+131:FDIV 12        :U:2
+132:RDAT 12        :S:2
+134:FDAT 12A       :S:2
+135:FDAT 12B       :S:2
+136:CTL  13        :U:2
+137:FILT 13        :U:2
+138:FIFO 13        :U:2
+139:FDIV 13        :U:2
+140:RDAT 13        :S:2
+142:FDAT 13A       :S:2
+143:FDAT 13B       :S:2
+144:CTL  14        :U:2
+145:FILT 14        :U:2
+146:FIFO 14        :U:2
+147:FDIV 14        :U:2
+148:RDAT 14        :S:2
+150:FDAT 14A       :S:2
+151:FDAT 14B       :S:2
+152:CTL  15        :U:2
+153:FILT 15        :U:2
+154:FIFO 15        :U:2
+155:FDIV 15        :U:2
+156:RDAT 15        :S:2
+158:FDAT 15A       :S:2
+159:FDAT 15B       :S:2
+192:BFLAG 0        :U:2
+193:BFLAG 1        :U:2
+194:BFLAG 2        :U:2
+195:BFLAG 3        :U:2
+196:BFLAG 4        :U:2
+197:BFLAG 5        :U:2
+198:BFLAG 6        :U:2
+199:BFLAG 7        :U:2
+200:BFLAG 8        :U:2
+201:BFLAG 9        :U:2
+202:BFLAG 10       :U:2
+203:BFLAG 11       :U:2
+204:BFLAG 12       :U:2
+205:BFLAG 13       :U:2
+206:BFLAG 14       :U:2
+207:BFLAG 15       :U:2
+208:TONE 0         :S:2
+209:TONE 1         :S:2
+210:TONE 2         :S:2
+211:TONE 3         :S:2
+212:TONE 4         :S:2
+213:TONE 5         :S:2
+214:TONE 6         :S:2
+215:TONE 7         :S:2
+216:TONE 8         :S:2
+217:TONE 9         :S:2
+218:TONE 10        :S:2
+219:TONE 11        :S:2
+220:TONE 12        :S:2
+221:TONE 13        :S:2
+222:TONE 14        :S:2
+223:TONE 15        :S:2
+224:TONE 16        :S:2
+225:TONE 17        :S:2
+226:TONE 18        :S:2
+227:TONE 19        :S:2
+228:TONE 20        :S:2
+229:TONE 21        :S:2
+230:TONE 22        :S:2
+231:TONE 23        :S:2
+232:TONE 24        :S:2
+233:TONE 25        :S:2
+234:TONE 26        :S:2
+235:TONE 27        :S:2
+240:PERR           :U:2
+241:+17            :S:2
+242:+8.8           :S:2
+243:+5A            :S:2
+244:+3.3           :S:2
+245:+2.048         :S:2
+246:+1.25          :S:2
+247:-5             :S:2
+248:-17            :S:2
+249:TEMP           :S:2
+254:VUSER          :U:2
+255:VTEST          :U:2

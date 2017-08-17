@@ -1,0 +1,69 @@
+:manmanual: V120
+
+v120irqd(1)
+===========
+
+NAME
+----
+v120irqd - V120 interrupt dispatch daemon
+
+SYNOPSIS
+--------
+*v120irqd* ['-dfknV?'] ['--debug'] ['--fakeok'] ['--foreground'] ['--novme']
+	['--help'] ['--usage'] ['--version']
+	
+ARGUMENTS
+---------
+*-d, --debug*::
+	Debug mode: provide additional logging information.
+
+*-f, --fakeok*::
+	Allow clients to send fake interrupts
+
+*-k, --foreground*::
+	Run in foreground.  Default is to fork to background.
+
+*-n, --novme*::
+	No VME interrupts.  Implies --fakeok
+	
+*-?, --help*::
+	Give this help list
+
+*--usage*::
+	Give a short usage message
+
+*-V, --version*::
+	Print program version
+
+SETUP
+-----
+To use v120irqd(1), install it and make sure that it is executed as a part of 
+the system startup process, which varies from system to system (init, 
+systemd, upstart) and as a result the installer makes no attempt to handle 
+this step. Additionally, v120irqd(1) makes extensive use of syslog 
+functionality to provide diagnostic messages.  These will go into 
++/var/log/syslog+ by default; a sample rsyslogd file for diverting 
+non-critical messages to +/var/log/v120irqd.log+ is provided as well.
+
+....
+include::../v120irqd/30-v120irqd.conf[]
+....
+
+AUTHOR
+------
+Rob Gaddi, Highland Technology
+July 2015
+
+COPYRIGHT
+---------
+Copyright Highland Technology, 2015.  License 3-clause Modified BSD.
+
+SEE ALSO
+--------
+v120irqd_ack (3) +
+v120irqd_client (3) +
+v120irqd_getinterrupt (3) +
+v120irqd_release (3) +
+v120irqd_request (3) +
+v120irqd_status (3) +
+v120irqd (7) +

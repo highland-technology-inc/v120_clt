@@ -1,0 +1,189 @@
+.TH "V120" "3" "July 2016" "Highland Technology, Inc." "v120irqd API Reference"
+.SH "NAME"
+\fBv120irqd_interrupt, v120irqd_getinterrupt, v120irqd_release, v120irqd_request\fR - Functions to handle V120 interrupts
+.SH "SYNOPSIS"
+.nf
+\fB#include <v120irqd.h>\fR
+.IB result " = v120irqd_interrupt(int " socket ", struct v120irqd_selector *" sel );
+.IB result " = v120irqd_getinterrupt(int " socket ", struct v120irqd_selector *" sel );
+.IB result " = v120irqd_release(int " socket ", struct v120irqd_selector *" sel );
+.IB result " = v120irqd_request(int " socket ", struct v120irqd_selector *" sel );
+
+link with \fI-lV120irqd\fR
+.fi
+.
+.SH "DESCRIPTION"
+.P
+Note: Throughout this man page, "server" refers to the V120 IRQ daemon
+.BR v120irqd (8),
+and "client" refers to a user program accessing functions in \fI<v120irqd.h>\fR.
+.P
+These functions take two arguments each:
+.RS 4
+.P
+\fIsocket\fR is the connection to the V120 IRQ daemon, returned
+from
+.BR v120irqd_client (3).
+.P
+\fIsel\fR is a pointer to a \fIstruct v120irqd_selector\fR, described
+in the subsection below.
+.RE
+.P
+\fBv120irqd_interrupt\fR() -- signal an IRQ on \fIsocket\fR
+.P
+.RS 4
+The server calls this to send an interrupt notification to a client.
+Clients can call this to send a request for a fake interrupt to the
+server for testing purposes if the server was started with \fB--fakeok\fR.
+.P
+\fIv120irqd_interrupt()\fR will block until a response is returned, and
+fail if that response is not ACK.
+.RE
+.P
+\fBv120irqd_getinterrupt\fR() - Copy interrupt notification into \fIsel\fR
+.P
+.RS 4
+The call blocks until an interrupt notification is sent from the server.
+poll() can be used to not call this function until a message is available.
+.P
+The client must reply with
+.BR v120irqd_ack (3)
+or
+.BR v120irqd_nak (3)
+after receiving an interrupt notification or the entire interrupt system
+will stop working. In the case of an ROAK interrupt, the client should do
+this immediately. In the case of an RORA interrupt, the client should
+perform the necessary register access to clear the interrupt as soon as
+possible, then acknowledge.
+.RE
+.P
+\fBv120irqd_release\fR() - Stop getting a given interrupt notification
+.RS 4
+\fIsel\fR must be identical to the one requested during \fBv120irqd_request\fR().
+.RE
+.P
+\fBv120irqd_request\fR() - Request interrupt notification from the server.
+.RS 4
+The server can only have one recipient for any given interrupt, and will
+NAK if any attempt is made to request a notification that has already been
+assigned.  If you are going to request both specific and general handlers,
+make the specific requests first.  For instance, request
+.nf
+  {.crate = (1 << 0), .irq = (1 << 5), .vector = 0xDEADBEEF}
+before you request
+  {.crate = (1 << 0), .irq = \fBANYIRQ\fR, .vector = \fBANYVECTOR\fR}.
+.fi
+.RE
+.
+.SS "struct v120irqd_selector"
+.P
+\fIstruct v120irqd_selector\fR is declared in
+\fI<v120irqd.h>\fR with the following members
+.P
+.RS 4
+.nf
+.BI "uint16_t " crate;
+.BI "uint16_t " irq;
+.BI "uint32_t " vector;
+.BI "uint32_t " payload;
+.fi
+.RE
+.P
+\fIcrate\fR
+.RS 4
+Crate bitmask. (1<<n) registers for crate n (0\-15). \fBANYCRATE\fR for all.
+.RE
+.P
+\fIirq\fR
+.RS 4
+IRQ bitmask. (1<<n) registers for IRQn (1\-7). \fBANYIRQ\fR for all.
+.RE
+.P
+\fIvector\fR
+.RS 4
+IACK vector response from card, or \fBANYVECTOR\fR for all.
+.RE
+.P
+\fIpayload\fR
+.RS 4
+User defined data to be returned when this request hits.
+.RE
+.P
+\fICrate\fR and \fIirq\fR are both bitmasks.  \fIcrate\fR uses 0x0001
+through 0x8000 to represent crate 0 through crate 15 respectively.
+\fIirq\fR uses 0x02 through
+0x80 to represent VMEbus IRQ1* through IRQ7*.  When requesting an
+interrupt, you can use this as "multibit" selector, one that takes
+advantage of the bitmask to request, for instance, any interrupt that may
+occur on crates 3 and 6.  The \fBANYCRATE\fR and \fBANYIRQ\fR constants
+are defined to simplify broader requests.
+.P
+The vector field is a number that must correspond directly to the
+interrupt vector queried from the backplane.  This vector is always
+32 bits, even if the VME interrupter being queried is only D16 or D8.
+Unused bits must be padded with 1s, not zeros, to reflect the fact that
+the VME backplane is idle-high.  So a D16 module returning vector 0x1234
+would have a \fIvector\fR of 0xFFFF1234.  The special case of ANYVECTOR
+can be used with a multibit selector to request delivery of the interrupt
+regardless of retrieved vector.
+.P
+A delivered interrupt, on the other hand, will always be "concrete", which
+is to say that it will have only 1 bit set in crate and 1 bit set in IRQ, and
+the vector will be the actual value fetched from the backplane, which should
+never be \fBANYVECTOR\fR.
+.P
+The payload is arbitrary client data, provided to the server then given back
+when requested interrupts are matched.  The idea is that this can be an index
+into a table allowing for quick dispatching when an interrupt is returned,
+rather than the client having to once again iterate looking for the correct
+crate/irq/vector combination.  Note that on a 32-bit system, the payload is
+sufficient to hold a function pointer.  \fIDO NOT\fR do this; it's a
+giant glaring security hole.  A table index can be easily range checked
+for validity before just executing any old code; running whatever
+function pointer you're handed back is like eating candy from strangers
+leaning out of panel vans.
+
+\fIv120irqd_interrupt()\fR signals an IRQ on the socket.
+.P
+.SH "RETURN"
+.P
+All functions return zero upon success, or a -errno if there was an
+error.
+.SH "ERRORS"
+.P
+Rather than set \fIerrno\fR, these functions return negative
+error numbers in case of failure. Specifically:
+.P
+.B -EBADMSG
+.RS 4
+For \fBv120irqd_getinterrupt\fR(), this indicates that while a
+successful message was received, it was not an interrupt.
+.P
+For \fBv120irqd_interrupt\fR(), this indicates that the client
+send a response other than an ACK
+.RE
+.P
+.B -ENOTCONN
+.RS 4
+For \fBv120irqd_getinterrupt\fR(), this indicates the socket is not
+connected.
+.RE
+.P
+.B -EPERM
+.RS 4
+For \fBv120irqd_request\fR(), this indicates a server NAK, which will be
+received if any of the fields in \fIsel\fR have an invalid value or they
+conflict with existing interrupts.
+.RE
+.
+.SH "AUTHOR"
+.P
+Rob Gaddi - libV120irqd and documentation
+.P
+Paul Bailey - man page transcription
+.
+.SH "SEE ALSO"
+.BR v120 (7)
+.BR v120irqd (7)
+.BR v120irqd (8)
+.BR v120irqd_client (3)

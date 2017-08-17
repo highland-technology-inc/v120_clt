@@ -1,0 +1,399 @@
+.TH "V120" "7" "July 2016" "Highland Technology, Inc." "V120 API Reference"
+.
+.SH "NAME"
+\fBV120\fR \- Overview of libV120
+.
+.SH "SYNOPSIS"
+.
+.P
+For libV120:
+.RS 4
+.nf
+.B #include <V120.h>
+.IB v120_handle " = v120_open(int " unit_id );
+
+link with \fB-lV120\fR
+.fi
+.RE
+.P
+For libV120irqd:
+.RS 4
+.nf
+.B #include <v120irqd.h>
+.IB socketfd " = v120irqd_client(const char *" socketname );
+
+link with \fB-lV120irqd\fR
+.fi
+.RE
+.
+.SH "LIBV120"
+This is an overview of libV120, as well as documentation of some of the
+low-level functions and types not documented in their own man pages.
+.
+.SS "Accessing the controller"
+Accessing the V120 is done calling
+.BR v120_open (3)
+or
+.BR v120_next (3).
+These will return a pointer to a \fIV120_HANDLE\fR, which is
+the fundamental object of this library. All the other functions that
+operate on the V120 will require it.
+.
+.P
+Before program exit, call
+.BR v120_close (3)
+in order to release all of the mapped memory that has been taken by other
+calls.
+.
+.SS "Low-level V120 management"
+.P
+To get direct access to the V120's memory mapped registers, use the
+following functions:
+.P
+.IB irq_regs " = v120_get_irq(V120_HANDLE *" h );
+.RS 4
+returns a direct pointer to the \fIV120_IRQ\fR contol registers.
+.P
+.B WARNING:
+Do not access these IRQ registers directly if you are using the v120irqd
+API.
+.RE
+.P
+.IB config_regs " = v120_get_config(V120_HANDLE *" h );
+.RS 4
+returns a direct pointer to the V120's \fIV120_CONFIG\fR registers.
+.RE
+.P
+.IB monitor_regs " = v120_get_monitor(V120_HANDLE *" hV120 ", int " monitor );
+.RS 4
+returns a \fIvolatile\fR pointer to the \fIV120_MONITOR\fR registers at
+\fImonitor\fR array-offset.
+.RE
+.P
+.IB records " = v120_get_records(V120_HANDLE *" hV120 ", int " record );
+.RS 4
+returns the \fIvolatele\fR pointer to the \fIV120_PCIE_RECORDS\fR struct
+.RE
+.P
+\fB<V120.h>\fR defines structures for memory-mapped access to the V120's
+registers.
+.P
+Type \fIV120_IRQ\fR is a struct whose members include
+\fC
+.nf
+.RS 4
+volatile const uint32_t irqstatus;
+volatile uint32_t irqen;
+volatile uint32_t iackcfg;
+volatile uint32_t pciirq;
+.RE
+.fi
+\fR
+.P
+Type \fIV120_MONITOR\fR is a struct whose members include
+\fC
+.nf
+.RS 4
+uint32_t mon_ctl;
+uint32_t mon_trans;
+uint32_t mon_resp;
+uint64_t addr;
+uint64_t data;
+.RE
+.fi
+\fR
+.P
+Type \fIV120_PCIE_RECORDS\fR is a struct whose members include
+\fC
+.nf
+.RS 4
+uint32_t status;
+uint32_t address;
+uint64_t data;
+.RE
+.fi
+\fR
+.P
+Type \fIV120_CONFIG\fR is a struct containing most of the configuration
+registers in the V120.  Its fields include
+\fC
+.nf
+.RS 4
+volatile uint32_t mfr_id;
+volatile uint32_t modtype;
+volatile uint32_t modrev;
+volatile uint32_t serial;
+volatile uint32_t dash;
+volatile uint32_t rom_id;
+volatile uint32_t rom_rev;
+volatile uint32_t build;
+volatile uint32_t status;
+volatile uint32_t mcount;
+volatile uint32_t uptime;
+volatile uint32_t uled;
+volatile uint32_t dips;
+
+/* Macros for reflashing et al. */
+volatile uint32_t macro;
+volatile uint32_t mp[4];
+
+/* VME/VXI diagnostics */
+volatile uint32_t vme_acc;
+volatile uint32_t vme_rc;
+volatile uint32_t utility;
+volatile uint32_t requester;
+volatile uint32_t arbstate;
+
+/* Clock and other control */
+volatile uint32_t clockctl;
+volatile uint32_t clocksta;
+volatile uint32_t fpctl;
+volatile uint32_t fpmon;
+
+/* network, sys cotroller */
+volatile uint64_t mac_addr;
+volatile uint32_t ip_addr;
+volatile uint32_t slot;
+
+/* diagnostics */
+volatile uint32_t pdflags;
+volatile uint32_t temperature;
+volatile uint32_t ariflow;
+volatile uint32_t psP5Vme;
+volatile uint32_t psP12Vme;
+volatile uint32_t psN12Vme;
+volatile uint32_t psP35Vxi;
+volatile uint32_t psN24Vxi;
+volatile uint32_t psP3_3Vxi;
+volatile uint32_t psN2Vxi;
+volatile uint32_t psN5_2Vxi;
+volatile uint32_t psP1_2Int;
+volatile uint32_t psP2_5Int;
+volatile uint32_t psP3_3Int;
+
+volatile uint32_t ram[128];
+volatile uint32_t buf[256];
+.RE
+.fi
+\fR
+.P
+See the V120 manual for a description of these registers.
+.P
+
+.SS "Low level VME management"
+.P
+The following functions are used for low-level VME management:
+.P
+.IB pd_regs " = v120_get_pd(V120_HANDLE *" h );
+.RS 4
+Get a pointer to the base address of the V120's \fIV120_PD\fR page
+descriptors (see
+.BR V120_PD (3)).
+.RE
+.P
+.IB vme_ptr " = v120_get_all_vme(V120_HANDLE *" h );
+.RS 4
+Get a pointer to the entire memory-mapped VME space for a V120.
+.RE
+.P
+.IB pg_ptr " = v120_get_vme(V120_HANDLE *" h ", int " start_page ", int " end_page );
+.RS 4
+Get a pointer to a subsection of the VME space. \fIstart_page\fR is
+the first page to be mapped, and \fIend_page\fR is the last page to
+be mapped.
+.RE
+.P
+.IB ret_ptr "= v120_configure_page(V120_HANDLE *" h ", int " idx ", uint64_t " base ", V120_PD " config );
+.RS 4
+Configure a V120 page descriptor at page \fIidx\fR.  The page's base VME
+address is \fIbase\fR, which must be a multiple of 0x4000.  \fIconfig\fR
+is the remaining \fIV120_PD\fR info (see
+.BR V120_PD (3)).
+.RE
+.P
+.IB pd " = v120_get_page_configuration(V120_HANDLE *" hV120 ", int " idx );
+.RS 4
+Get the \fIV120_PD\fR page descriptor value corresponding to page \fIidx\fR.
+.RE
+.P
+See the V120 manual for the meaning of thigs like VME "pages".  In brief,
+the V120 can be thought of as doing additional address mapping between its
+registers in the area returned from \fIv120_get_vme()\fR, and the actual
+VME address space.
+.P
+.B WARNING!
+Do not use both low-level and high-level VME management functions on the
+same \fIV120_HANDLE\fR. Behavior will be undefined if you do.  (This does
+not apply to DMA).
+.P
+The V120 can be managed at a fairly low level by working with the
+provided wrapper calls\. First, call \fIv120_get_vme()\fR. This will
+provide a pointer to a selected subsection of VME space.
+.
+.P
+From here, the page descriptors can be configured using the
+\fIv120_configure_page()\fR function, which will return pointers into the
+same memory\-mapped space. This spave must have already been mapped with
+either a \fIv120_get_vme()\fR or \fIv120_allocate_vme()\fR call,
+otherwise it will fail and return a NULL pointer, setting errno.
+.
+.P
+\fIv120_get_page_configuration()\fR is also available to read page
+descriptors back.
+.
+.P
+\fIv120_get_pd()\fR directly gets a pointer to the array of page
+descriptors. This is not advised; it provides only a small improvement
+in overhead, but eliminates the safety checking of the
+\fIv120_configure_page()\fR function.
+.
+.SS "Low level call example"
+Get a pointer to the entire A16 space, set to maximum VME speed:
+.
+.IP "" 4
+\fC
+.nf
+    V120_HANDLE *h;
+    int i;
+    void *pvme;
+
+    h = v120_open(4);
+    if (h == NULL)
+        goto err;
+    pvme = v120_get_vme(h, 0, 11);
+    if (pvme == NULL)
+        goto err;
+
+    for (i = 0; i < 4; ++i) {
+        uint64_t vme_address = (i * V120_PAGE_SIZE);
+        void *tmp = v12_configure_page(h, i, vme_address,
+                                       V120_SMAX | V120_EAUTO | A16);
+        if (tmp == NULL)
+            goto err;
+    }
+    /* code that uses the V120 and pages set up */
+    \...
+    goto done;
+
+err:
+    /* code that reports and cleans up */
+    goto done;
+
+done:
+    v120_close(h);
+.fi
+\fR
+.
+.IP "" 0
+.
+.SS "High level VME management"
+\fIlibV120\fR provides higher-level functions to manage VME.  These are
+recommended instead of the low-level functions mentioned abot.  Choose
+one or the other, but do not use both for the same V120 crate.
+.P
+See
+.BR V120_PD (3),
+.BR v120_allocate_vme (3),
+.BR v120_get_vme_region (3),
+.BR v120_add_vme_region (3),
+and
+.BR v120_delete_vme_list (3).
+.
+.SS "DMA management"
+.P
+See
+.BR v120_dma_xfr (3)
+and
+.BR v120_dma_status (3)
+
+.\" .SS "Other functions, the dregs, et al."
+.\" TODO: documentation for v120_snprint_monitor & al., v120_irq_open
+.
+.SH "LIBV120IRQD"
+.P
+See
+.BR v120irqd (7)
+for the main documenation on libV120irqd.
+.P
+\fB<v120irqd.h>\fR is the library header for clients to receive VME
+interrupts as asynchronous events by using the v120irqd service.
+.P
+When opening the Unix domain socket, a NULL pointer can be provided to
+just use the compiled in default of \fBDEFAULTSOCKET\fR. To use a
+\fBDEFAULTSOCKET\fR in the Linux abstract namespace, rather than on the
+filesystem, start the socket name with an @ character; this is done in
+the default DEFAULTSOCKET of "@/v120/v120irqd".
+.P
+This comes with the advantage of not needing to unlink old versions of
+the socket, which allows the server to automatically enforce the idea
+that only one copy of the server should be running at once.
+.P
+Many functions will say they return "Standard success."  What that means
+in the context of this library is that they will return 0 on success, or
+a negative number on failure, which will be -errno at the time of return.
+.
+.SH "BUGS"
+.P
+Hot-plugging the V120 is not yet supported by this library.
+.P
+This library is not process-safe.  It is possible for a process
+to configure a V120's page descriptors one way and for another
+process to configure them another way, while both processes have
+an open handle to the same V120.  The processes will have different
+data handles for the V120, but each handle will manipulate the same
+registers.
+.
+.SH "SEE ALSO"
+.P
+Low-level ABI documentation:
+.RS 4
+.BR v120 (4),
+.I V120 Technical Manual
+.RE
+.P
+\fIlibV120\fR access functions:
+.RS 4
+.BR v120_open (3),
+.BR v120_close (3),
+.BR v120_next (3)
+.RE
+.P
+\fIlibV120\fR high-level functions:
+.RS 4
+(Lower-level functions are discussed above in this man page.)
+.br
+.BR V120_PD (3),
+.BR v120_allocate_vme (3),
+.BR v120_get_vme_region (3),
+.BR v120_add_vme_region (3),
+.BR v120_delete_vme_list (3),
+.BR v120_dma_status (3),
+.BR v120_dma_xfr (3)
+.RE
+.P
+\fIlibV120irqd\fR and its functions:
+.RS 4
+.BR v120irqd (7),
+.BR v120irqd_nak (3),
+.BR v120irqd_ack (3),
+.BR v120irqd_getinterrupt (3),
+.BR v120irqd_release (3),
+.BR v120irqd_request (3),
+.BR v120irqd_interrupt (3),
+.BR v120irqd_client (3),
+.BR v120irqd_status (3)
+.RE
+.P
+Utilities:
+.RS 4
+.BR v120 (1),
+.BR v120irqd (8)
+.RE
+.
+.SH "AUTHOR"
+Paul Bailey <pbailey@highlandtechnology.com> -
+libV120, v120 (1), V120 Linux driver
+.
+.P
+Rob Gaddi <rgaddi@highlandtechnology.com> -
+libV120irqd, v120irqd (8)

@@ -1,0 +1,110 @@
+=====================================================================
+Library And Command-line Tools For V120/V124 VME/VXI Crate Controller
+=====================================================================
+
+The programs, libraries, etc., are:
+
+============== ============= =============================================
+program:       man page:     description:
+-------------- ------------- ---------------------------------------------
+ libV120       v120 (7)      Library for accessing memory-mapped VME.
+ libV120irqd   v120irqd (7)  Library for interfacing with v120irqd
+ v120          v120 (1)      Command-line tool for V120
+ v120          v120 (4)      Driver for V120
+ v120irqd      v120irqd (8)  V120 IRQ dispatch daemon
+ v120_tui [1]_ v120_tui (1)  Terminal-based VME register browser
+============== ============= =============================================
+
+.. [1] v120_tui is not considered an essential program in this source
+       tree. If it cannot compile due to a missinge prerequisite
+       header/library, the others will still compile.
+
+
+Building and installing programs and libraries:
+===============================================
+
+.. note::
+
+   If you got this code using git instead of receiving a tarball package
+   from Highland Technology, you will first need to run the command
+
+   ::
+
+      autoreconf -i
+
+   You will need autotools and libtool to be installed on your computer.
+
+The generic instructions for configuring this source tree for your
+computer are in the file INSTALL in this directory.  Briefly, the
+shell commands are:
+
+::
+
+    $ ./configure  # or "configure --prefix=/your/preffered/path"
+    $ make
+    $ make install  # or more likely "sudo make install"
+
+This will install into your /usr/local/ directory by default.
+Note that the default installation is not always the best.  Some Linux
+distributions will require you to either modify your LD_LIBRARY_PATH or
+use a different installation path (the "--prefix" argument) for the
+shared-object libraries to work.
+
+Read INSTALL for more information.
+
+If configure fails, then v120, v120irqd, or one of the libraries
+cannot be compiled due to a missing header or library on you computer.
+If you are running GNU/Linux, then this is unlikely.  email one of
+the developers (see AUTHORS in this directory) if you are running
+a GNU/Linux system like Ubuntu but the configure script fails.
+
+
+Building and installing driver:
+===============================
+
+See driver/Readme.txt for instructions on building and installing
+the V120 Linux driver.
+
+
+Documentation:
+==============
+
+Man pages are in the man/ directory.  They are installed with the
+binaries.  To read them without installing, for example v120 (1), try one
+of:
+
+::
+
+    man ./man/v120.1
+
+or
+
+::
+
+    groff -T ascii -m man ./man/v120.1 | less
+
+In addition to the man pages, HTML and PDF documentation for the V120's
+interrupts are in doc/builddoc/.
+
+
+Portability
+===========
+
+We try to keep this as portable as possible, but still it was designed
+for GNU/Linux systems only.
+
+We currenly only have a driver for Linux, so this will not run on BSD or
+some other Unix-like operating system.  To make these libraries work on
+such a system would require:
+
+   * A driver, of course.
+   * Its ABI must conform to the one discussed in man page man/v120.4.
+     (If you have not installed it, try ``groff -Tascii -man ./man/v120.4``
+     or ``man ./man/v120.4`` to read it.)
+   * Some portableizing (#ifdef'ing) around the linux-kernel-specific
+     #include's in driver/v120_uapi.h (which is visible in user-space)
+     will be needed.
+   * The library and tools will need some of their Gnu-specific,
+     non-POSIX functions to be tweaked or cleaned up.
+
+Paul Bailey

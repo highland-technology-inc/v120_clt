@@ -1,0 +1,29 @@
+.TH "V120" "3" "July 2016" "Highland Technology, Inc." "v120irqd API Reference"
+.SH "NAME"
+\fBv120irqd_ack, v120irq_nak\fR - Send affirmative (ACK) or negative (NAK) response
+
+.SH "SYNOPSIS"
+.nf
+\fB#include <v120irqd.h>\fR
+.IB result " = v120irqd_nak(int " socket );
+.IB result " = v120irqd_ack(int " socket );
+
+link with \fI-lV120irqd\fR
+.fi
+.SH "DESCRIPTION"
+.P
+\fIv120irqd_ack()\fR sends an affirmative (ACK) response. \fIv120irqd_nak()\fR
+sends a negative (NAK) response.
+.P
+\fIsocket\fR is the value returned from
+.BR v120irqd_client (3).
+.SH "AUTHOR"
+.P
+\fBRob Gaddi\fR <rgaddi@highlandtechnology.com> - libV120irqd and documentation
+.P
+\fPaul Bailey\fR - man page transcription
+.RE
+.SH "SEE ALSO"
+.BR v120 (7)
+.BR v120irqd (7)
+.BR v120irqd (8)
