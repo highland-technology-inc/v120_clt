@@ -18,7 +18,7 @@ program:       man page:     description:
 ============== ============= =============================================
 
 .. [1] v120_tui is not considered an essential program in this source
-       tree. If it cannot compile due to a missinge prerequisite
+       tree. If it cannot compile due to a missing prerequisite
        header/library, the others will still compile.
 
 
@@ -99,14 +99,14 @@ We currenly only have a driver for Linux, so this will not run on BSD or
 some other Unix-like operating system.  To make these libraries work on
 such a system would require:
 
-   * A driver, of course.
-   * Its ABI must conform to the one discussed in man page man/v120.4.
-     (If you have not installed it, try ``groff -Tascii -man ./man/v120.4``
-     or ``man ./man/v120.4`` to read it.)
-   * Some portableizing (#ifdef'ing) around the linux-kernel-specific
-     #include's in driver/v120_uapi.h (which is visible in user-space)
-     will be needed.
-   * The library and tools will need some of their Gnu-specific,
-     non-POSIX functions to be tweaked or cleaned up.
+* A driver, of course.
+* Its ABI must conform to the one discussed in man page man/v120.4.
+  (If you have not installed it, try ``groff -Tascii -man ./man/v120.4``
+  or ``man ./man/v120.4`` to read it.)
+* Some portable-izing (#ifdef'ing) around the linux-kernel-specific
+  #include's in driver/v120_uapi.h (which is visible in user-space)
+  will be needed.
+* The library and tools will need some of their Gnu-specific,
+  non-POSIX functions to be tweaked or cleaned up.
 
 Paul Bailey
