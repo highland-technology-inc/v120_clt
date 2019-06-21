@@ -2,6 +2,17 @@ This file contains the overview of changes made to driver and user tools.
 See ChangeLog for the more detailed changes made in version control since
 the last release.
 
+V120-2.0: HTI SVN commit 8478
+  Changes from v120-1.0:
+  driver:
+  - Fix bug that causes a kernel OOPS on some systems
+    when remove()ing the driver.
+  - Save all 4096 bytes of PCIe config space, rather than the
+    PCI-specific 64 bytes, to use with "v120 reinit".
+  - Expand compatibility of driver by removing sysfs for older
+    kernel versions which have a different API.
+  - Add 32-bit compatibility to driver.
+
 V120-1.0: HTI SVN commit 5877
   This is the first ``official'' released version.
   Changes from v120-0.6:

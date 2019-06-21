@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([v120],[1.0],[pbailey@highlandtechnology.com])
+AC_INIT([v120],[2.0],[pbailey@highlandtechnology.com])
 
 AC_CONFIG_AUX_DIR([build])
 AC_CONFIG_MACRO_DIR([m4])

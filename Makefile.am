@@ -8,7 +8,7 @@ EXTRA_DIST = \
  driver/COPYING \
  driver/dkms.conf \
  driver/Makefile \
- driver/Readme.txt \
+ driver/README.rst \
  driver/v120_dma.c \
  driver/v120_driver.c \
  driver/v120_struct.h \
