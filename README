@@ -42,7 +42,7 @@ shell commands are:
 
 ::
 
-    $ ./configure  # or "configure --prefix=/your/preffered/path"
+    $ ./configure  # or "configure --prefix=/your/preferred/path"
     $ make
     $ make install  # or more likely "sudo make install"
 
