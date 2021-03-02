@@ -16,6 +16,10 @@
 #if HAVE_LIBNCURSES
 #include <stdarg.h>
 
+#if ((__GNUC__ > 3 ) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 2))) && !defined(NCURSES_INTERNALS)
+#define GNUC_GT_3_2
+#endif
+
 volatile int ttnrows_ = 24;
 volatile int ttncols_ = 80;
 
@@ -105,7 +109,11 @@ void tteeop(void)
 
 void ttvprintf(const char *fmt, va_list ap)
 {
-        vwprintw(stdscr, fmt, ap);
+#ifdef GNUC_GT_3_2
+  vw_printw(stdscr, fmt, ap);
+#else
+  vwprintw(stdscr, fmt, ap);
+#endif
 }
 
 void ttprintf(const char *fmt, ...)
