@@ -27,12 +27,12 @@ static char *home2root(const char *path)
         const char *s;
         char buf[128];
 
+        memset((void *)buf, 0, sizeof(buf));
         if (path[0] == '~') {
                 if (path[1] != '/')
                         return NULL;
                 path += 2;
-                snprintf(buf, 128, "%s/%s", gbl.g_home, path);
-                buf[127] = '\0';
+                snprintf(buf, sizeof(buf)-1, "%s/%s", gbl.g_home, path);
                 s = (const char *)buf;
         } else if (path[0] == '/') {
                 s = path;
@@ -40,7 +40,7 @@ static char *home2root(const char *path)
                 return NULL;
         }
 
-        ps = malloc(strlen(s));
+        ps = malloc(strlen(s)+1);
         if (ps != NULL)
                 strcpy(ps, s);
 
@@ -66,7 +66,8 @@ static char *unk2root(const char *filename)
         char *ret = NULL;
 
         /* Try this dir */
-        strncpy(buf, filename, sizeof(buf));
+        memset((void *)buf, 0, sizeof(buf));
+        strncpy(buf, filename, sizeof(buf)-1);
         found = access(buf, F_OK);
         while (found != 0 && p != NULL) {
                 snprintf(buf, sizeof(buf), "%s/%s", p->p_path, filename);
